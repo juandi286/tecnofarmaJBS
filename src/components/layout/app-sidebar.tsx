@@ -12,10 +12,10 @@ import {
   SidebarContent,
   SidebarMenu,
   SidebarMenuItem,
-  SidebarMenuButton,
   SidebarFooter,
   SidebarTrigger,
   useSidebar,
+  sidebarMenuButtonVariants, // Import the variants
 } from '@/components/ui/sidebar';
 import { Button } from '../ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -38,19 +38,25 @@ export function AppSidebar() {
             <SidebarMenuItem key={item.title}>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Link href={item.href} legacyBehavior passHref>
-                    <SidebarMenuButton
-                      as="a" 
-                      isActive={pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))}
-                      className={cn(
-                        item.disabled && "cursor-not-allowed opacity-50"
-                      )}
-                      aria-disabled={item.disabled}
-                      tabIndex={item.disabled ? -1 : undefined}
-                    >
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </SidebarMenuButton>
+                  <Link
+                    href={item.href}
+                    onClick={item.disabled ? (e: React.MouseEvent) => e.preventDefault() : undefined}
+                    aria-disabled={item.disabled}
+                    tabIndex={item.disabled ? -1 : undefined}
+                    data-sidebar="menu-button" // Replicate attributes
+                    data-active={pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))}
+                    className={cn(
+                      sidebarMenuButtonVariants({
+                        variant: "default",
+                        size: "default",
+                        // isActive prop is not part of variants, handled by data-active CSS selector
+                      }),
+                      item.disabled && "cursor-not-allowed opacity-50"
+                      // Active state styling is handled by data-[active=true] in sidebar.tsx CSS for menu-button
+                    )}
+                  >
+                    <item.icon />
+                    <span>{item.title}</span>
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent 
