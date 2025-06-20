@@ -6,7 +6,7 @@ import * as z from 'zod';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Activity } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const esquemaOlvidePassword = z.object({
   email: z.string().email({ message: 'Por favor, introduce una dirección de correo electrónico válida.' }),
@@ -79,9 +80,9 @@ export function FormularioOlvidePassword() {
         </Form>
       </CardContent>
       <CardFooter className="flex justify-center">
-        <Button variant="link" asChild className="text-sm">
-            <Link href="/auth/ingresar">Volver a iniciar sesión</Link>
-        </Button>
+        <Link href="/auth/ingresar" className={cn(buttonVariants({ variant: "link" }), "text-sm")}>
+            Volver a iniciar sesión
+        </Link>
       </CardFooter>
     </Card>
   );

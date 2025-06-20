@@ -6,7 +6,7 @@ import * as z from 'zod';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Activity } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const esquemaIngreso = z.object({
   email: z.string().email({ message: 'Dirección de correo electrónico inválida.' }),
@@ -104,14 +105,14 @@ export function FormularioIngreso() {
         </Form>
       </CardContent>
       <CardFooter className="flex flex-col items-center space-y-2">
-        <Button variant="link" asChild className="text-sm">
-            <Link href="/auth/olvide-password">¿Olvidaste tu contraseña?</Link>
-        </Button>
+        <Link href="/auth/olvide-password" className={cn(buttonVariants({ variant: "link" }), "text-sm")}>
+            ¿Olvidaste tu contraseña?
+        </Link>
         <p className="text-sm text-muted-foreground">
           ¿No tienes una cuenta?{' '}
-          <Button variant="link" asChild className="p-0 h-auto font-semibold text-primary">
-            <Link href="/auth/registro">Regístrate</Link>
-          </Button>
+          <Link href="/auth/registro" className={cn(buttonVariants({ variant: "link" }), "p-0 h-auto font-semibold text-primary")}>
+            Regístrate
+          </Link>
         </p>
       </CardFooter>
     </Card>

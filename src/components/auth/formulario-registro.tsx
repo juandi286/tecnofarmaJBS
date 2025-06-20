@@ -6,7 +6,7 @@ import * as z from 'zod';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Activity } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const esquemaRegistro = z.object({
   nombreCompleto: z.string().min(2, { message: 'El nombre completo debe tener al menos 2 caracteres.' }),
@@ -129,9 +130,9 @@ export function FormularioRegistro() {
       <CardFooter className="flex flex-col items-center">
         <p className="text-sm text-muted-foreground">
           ¿Ya tienes una cuenta?{' '}
-          <Button variant="link" asChild className="p-0 h-auto font-semibold text-primary">
-            <Link href="/auth/ingresar">Ingresar</Link>
-          </Button>
+          <Link href="/auth/ingresar" className={cn(buttonVariants({ variant: "link" }), "p-0 h-auto font-semibold text-primary")}>
+            Ingresar
+          </Link>
         </p>
       </CardFooter>
     </Card>
