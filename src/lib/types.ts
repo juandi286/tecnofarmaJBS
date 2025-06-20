@@ -14,6 +14,7 @@ export interface Product {
   stock: number;
   minStock: number;
   imageUrl?: string;
+  dataAiHint?: string;
   averageDailySales: number;
   reorderCycleDays: number;
 }
