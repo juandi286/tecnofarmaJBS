@@ -1,59 +1,10 @@
 'use client';
-import { useState, useEffect } from 'react';
 import { DisenoPrincipal } from '@/components/layout/diseno-principal';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { MOCK_PRODUCTS, MOCK_CATEGORIES, MOCK_NOTIFICATIONS } from '@/lib/constants';
 import { Package, Tags, AlertTriangle, Bell } from 'lucide-react';
-import Link from 'next/link';
-import { buttonVariants } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import type { Notification } from '@/lib/types';
-
-interface TarjetaKpiProps {
-  title: string;
-  value: string | number;
-  icon: React.ReactNode;
-  description?: string;
-  link?: string;
-  linkLabel?: string;
-}
-
-function TarjetaKpi({ title, value, icon, description, link, linkLabel }: TarjetaKpiProps) {
-  return (
-    <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium font-body">{title}</CardTitle>
-        <div className="text-primary">{icon}</div>
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold font-headline">{value}</div>
-        {description && <p className="text-xs text-muted-foreground pt-1">{description}</p>}
-        {link && linkLabel && (
-          <Link href={link} className={cn(buttonVariants({ variant: "link", className: "p-0 h-auto mt-2 text-primary" }))}>
-            {linkLabel}
-          </Link>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
-function ItemNotificacionReciente({ notification }: { notification: Notification }) {
-  const [date, setDate] = useState('');
-
-  useEffect(() => {
-    setDate(new Date(notification.date).toLocaleDateString());
-  }, [notification.date]);
-
-  return (
-    <li className="p-2 rounded-md hover:bg-muted/50 transition-colors border-l-4 border-primary">
-      <h4 className="font-semibold">{notification.title}</h4>
-      <p className="text-sm text-muted-foreground">{notification.description}</p>
-      {date && <p className="text-xs text-muted-foreground mt-1">{date}</p>}
-    </li>
-  );
-}
-
+import { ItemNotificacionReciente } from '@/components/dashboard/item-notificacion-reciente';
+import { TarjetaKpi } from '@/components/dashboard/tarjeta-kpi';
 
 export default function PaginaPanelControl() {
   const productosBajoStock = MOCK_PRODUCTS.filter(p => p.stock < p.minStock).length;
