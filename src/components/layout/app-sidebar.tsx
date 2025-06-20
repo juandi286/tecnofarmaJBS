@@ -1,4 +1,3 @@
-
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -17,9 +16,16 @@ import {
   sidebarMenuButtonVariants,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
+import { useState, useEffect } from 'react';
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const [year, setYear] = useState<number | null>(null);
+
+  useEffect(() => {
+    setYear(new Date().getFullYear());
+  }, []);
+
 
   return (
     <Sidebar side="left" variant="sidebar" collapsible="icon">
@@ -57,7 +63,7 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter className="mt-auto border-t p-2 group-data-[collapsible=icon]:p-0">
          <div className="group-data-[collapsible=icon]:hidden text-xs text-muted-foreground text-center p-2">
-            © {new Date().getFullYear()} TecnoFarma
+            {year && <>© {year} TecnoFarma</>}
          </div>
          <div className="hidden group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-2">
             <SidebarTrigger asChild><Button variant="ghost" size="icon"><Activity className="h-5 w-5"/></Button></SidebarTrigger>
