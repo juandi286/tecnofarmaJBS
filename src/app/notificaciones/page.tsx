@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { DisenoPrincipal } from '@/components/layout/diseno-principal';
 import { ItemNotificacion } from '@/components/notificaciones/item-notificacion';
 import { MOCK_NOTIFICATIONS } from '@/lib/constants';
@@ -8,11 +8,9 @@ import { Button } from '@/components/ui/button';
 import { CheckCheck } from 'lucide-react';
 
 export default function PaginaNotificaciones() {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-
-  useEffect(() => {
-    setNotifications(MOCK_NOTIFICATIONS.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
-  }, []);
+  const [notifications, setNotifications] = useState<Notification[]>(() =>
+    MOCK_NOTIFICATIONS.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  );
 
   const handleMarkAsRead = (notificationId: string) => {
     setNotifications(prev =>
