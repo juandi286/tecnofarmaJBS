@@ -14,15 +14,12 @@ import {
   SidebarMenuItem,
   SidebarFooter,
   SidebarTrigger,
-  useSidebar,
   sidebarMenuButtonVariants,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const { state, isMobile } = useSidebar();
 
   return (
     <Sidebar side="left" variant="sidebar" collapsible="icon">
@@ -36,37 +33,24 @@ export function AppSidebar() {
         <SidebarMenu>
           {NAV_ITEMS.map((item: NavItem) => (
             <SidebarMenuItem key={item.title}>
-              <Tooltip>
-                <Link href={item.href} passHref legacyBehavior>
-                  <TooltipTrigger asChild>
-                    <a
-                      data-sidebar="menu-button"
-                      data-active={pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))}
-                      className={cn(
-                        sidebarMenuButtonVariants({
-                          variant: "default",
-                          size: "default",
-                        }),
-                        item.disabled && "cursor-not-allowed opacity-50"
-                      )}
-                      onClick={item.disabled ? (e: React.MouseEvent<HTMLAnchorElement>) => e.preventDefault() : undefined}
-                      aria-disabled={item.disabled}
-                      tabIndex={item.disabled ? -1 : undefined}
-                      // href is passed by <Link passHref>
-                    >
-                      <item.icon className="h-4 w-4" />
-                      <span className="group-data-[collapsible=icon]:hidden">{item.title}</span>
-                    </a>
-                  </TooltipTrigger>
-                </Link>
-                <TooltipContent
-                  side="right"
-                  align="center"
-                  hidden={state !== "collapsed" || isMobile}
-                >
-                  {item.title}
-                </TooltipContent>
-              </Tooltip>
+              <Link
+                href={item.href}
+                data-sidebar="menu-button"
+                data-active={pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))}
+                className={cn(
+                  sidebarMenuButtonVariants({
+                    variant: "default",
+                    size: "default",
+                  }),
+                  item.disabled && "cursor-not-allowed opacity-50"
+                )}
+                onClick={item.disabled ? (e: React.MouseEvent) => e.preventDefault() : undefined}
+                aria-disabled={item.disabled}
+                tabIndex={item.disabled ? -1 : undefined}
+              >
+                <item.icon className="h-4 w-4" />
+                <span className="group-data-[collapsible=icon]:hidden">{item.title}</span>
+              </Link>
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
@@ -82,5 +66,3 @@ export function AppSidebar() {
     </Sidebar>
   );
 }
-
-    

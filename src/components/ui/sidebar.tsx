@@ -4,7 +4,6 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { VariantProps, cva } from "class-variance-authority"
-import { PanelLeft } from "lucide-react"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
@@ -258,30 +257,26 @@ const Sidebar = React.forwardRef<
 Sidebar.displayName = "Sidebar"
 
 const SidebarTrigger = React.forwardRef<
-  React.ElementRef<typeof Button>,
-  React.ComponentProps<typeof Button>
->(({ className, onClick, ...props }, ref) => {
-  const { toggleSidebar } = useSidebar()
+  HTMLButtonElement,
+  React.ComponentProps<"button"> & { asChild?: boolean }
+>(({ asChild, onClick, ...props }, ref) => {
+  const { toggleSidebar } = useSidebar();
+  const Comp = asChild ? Slot : "button";
 
   return (
-    <Button
+    <Comp
       ref={ref}
       data-sidebar="trigger"
-      variant="ghost"
-      size="icon"
-      className={cn("h-7 w-7", className)}
       onClick={(event) => {
-        onClick?.(event)
-        toggleSidebar()
+        onClick?.(event);
+        toggleSidebar();
       }}
       {...props}
-    >
-      <PanelLeft />
-      <span className="sr-only">Toggle Sidebar</span>
-    </Button>
-  )
-})
-SidebarTrigger.displayName = "SidebarTrigger"
+    />
+  );
+});
+SidebarTrigger.displayName = "SidebarTrigger";
+
 
 const SidebarRail = React.forwardRef<
   HTMLButtonElement,
@@ -437,7 +432,7 @@ const SidebarGroupLabel = React.forwardRef<
       ref={ref}
       data-sidebar="group-label"
       className={cn(
-        "duration-200 flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium text-sidebar-foreground/70 outline-none ring-sidebar-ring transition-[margin,opa] ease-linear focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
+        "duration-200 flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium text-sidebar-foreground/70 outline-none ring-sidebar-ring focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
         "group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0",
         className
       )}
@@ -530,51 +525,6 @@ const sidebarMenuButtonVariants = cva(
     },
   }
 )
-
-type SidebarMenuButtonOwnProps<E extends React.ElementType = React.ElementType> = {
-  as?: E;
-  asChild?: boolean;
-  isActive?: boolean;
-} & VariantProps<typeof sidebarMenuButtonVariants>;
-
-type SidebarMenuButtonProps<E extends React.ElementType> = SidebarMenuButtonOwnProps<E> &
-  Omit<React.ComponentPropsWithoutRef<E>, keyof SidebarMenuButtonOwnProps<E>>;
-
-
-const SidebarMenuButton = React.forwardRef(
-  <E extends React.ElementType = "button">(
-    props: SidebarMenuButtonProps<E>,
-    ref: React.ForwardedRef<HTMLButtonElement | HTMLAnchorElement>
-  ) => {
-    const {
-      as: ElementType = "button",
-      asChild = false,
-      isActive = false,
-      variant = "default",
-      size = "default",
-      className,
-      children,
-      ...rest
-    } = props;
-
-    const Comp = asChild ? Slot : ElementType;
-
-    return (
-      <Comp
-        ref={ref as React.ForwardedRef<any>}
-        data-sidebar="menu-button"
-        data-size={size}
-        data-active={isActive}
-        className={cn(sidebarMenuButtonVariants({ variant, size, className }))}
-        {...rest}
-      >
-        {children}
-      </Comp>
-    );
-  }
-);
-SidebarMenuButton.displayName = "SidebarMenuButton"
-
 
 const SidebarMenuAction = React.forwardRef<
   HTMLButtonElement,
@@ -733,7 +683,6 @@ export {
   SidebarMenu,
   SidebarMenuAction,
   SidebarMenuBadge,
-  SidebarMenuButton,
   sidebarMenuButtonVariants,
   SidebarMenuItem,
   SidebarMenuSkeleton,
@@ -746,3 +695,5 @@ export {
   SidebarTrigger,
   useSidebar,
 }
+
+    

@@ -3,7 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { MOCK_PRODUCTS, MOCK_CATEGORIES, MOCK_NOTIFICATIONS } from '@/lib/constants';
 import { Package, Tags, AlertTriangle, Bell } from 'lucide-react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface KpiCardProps {
   title: string;
@@ -25,9 +26,9 @@ function KpiCard({ title, value, icon, description, link, linkLabel }: KpiCardPr
         <div className="text-2xl font-bold font-headline">{value}</div>
         {description && <p className="text-xs text-muted-foreground pt-1">{description}</p>}
         {link && linkLabel && (
-          <Button variant="link" asChild className="p-0 h-auto mt-2 text-primary">
-            <Link href={link}>{linkLabel}</Link>
-          </Button>
+          <Link href={link} className={cn(buttonVariants({ variant: "link", className: "p-0 h-auto mt-2 text-primary" }))}>
+            {linkLabel}
+          </Link>
         )}
       </CardContent>
     </Card>
