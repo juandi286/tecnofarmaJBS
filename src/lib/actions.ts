@@ -1,19 +1,17 @@
-// src/lib/actions.ts
 'use server';
-import { suggestRestock as suggestRestockFlow, type SuggestRestockInput, type SuggestRestockOutput } from '@/ai/flows/suggest-restock';
+import { sugerirReposicion as flujoSugerirReposicion, type SugerirReposicionInput, type SugerirReposicionOutput } from '@/ai/flows/sugerir-reposicion';
 
-export async function getRestockSuggestion(input: SuggestRestockInput): Promise<SuggestRestockOutput> {
+export async function obtenerSugerenciaReposicion(input: SugerirReposicionInput): Promise<SugerirReposicionOutput> {
   try {
-    // Add a small delay to simulate network latency for better UX
+    // Añadir un pequeño retraso para simular la latencia de red y mejorar la experiencia de usuario
     await new Promise(resolve => setTimeout(resolve, 1000));
-    const suggestion = await suggestRestockFlow(input);
+    const suggestion = await flujoSugerirReposicion(input);
     return suggestion;
   } catch (error) {
-    console.error("Error getting restock suggestion:", error);
-    // It's better to throw a custom error or return a structured error response for the client to handle
+    console.error("Error al obtener la sugerencia de reposición:", error);
     if (error instanceof Error) {
-        throw new Error(`Failed to get restock suggestion: ${error.message}`);
+        throw new Error(`Falló la obtención de sugerencia de reposición: ${error.message}`);
     }
-    throw new Error("An unknown error occurred while getting restock suggestion.");
+    throw new Error("Ocurrió un error desconocido al obtener la sugerencia de reposición.");
   }
 }

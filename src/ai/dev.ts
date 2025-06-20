@@ -1,4 +1,4 @@
 import { config } from 'dotenv';
 config();
 
-import '@/ai/flows/suggest-restock.ts';
+import '@/ai/flows/sugerir-reposicion.ts';

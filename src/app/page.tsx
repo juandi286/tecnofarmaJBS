@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { MainLayout } from '@/components/layout/main-layout';
+import { DisenoPrincipal } from '@/components/layout/diseno-principal';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { MOCK_PRODUCTS, MOCK_CATEGORIES, MOCK_NOTIFICATIONS } from '@/lib/constants';
 import { Package, Tags, AlertTriangle, Bell } from 'lucide-react';
@@ -9,7 +9,7 @@ import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { Notification } from '@/lib/types';
 
-interface KpiCardProps {
+interface TarjetaKpiProps {
   title: string;
   value: string | number;
   icon: React.ReactNode;
@@ -18,7 +18,7 @@ interface KpiCardProps {
   linkLabel?: string;
 }
 
-function KpiCard({ title, value, icon, description, link, linkLabel }: KpiCardProps) {
+function TarjetaKpi({ title, value, icon, description, link, linkLabel }: TarjetaKpiProps) {
   return (
     <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -38,7 +38,7 @@ function KpiCard({ title, value, icon, description, link, linkLabel }: KpiCardPr
   );
 }
 
-function RecentNotificationItem({ notification }: { notification: Notification }) {
+function ItemNotificacionReciente({ notification }: { notification: Notification }) {
   const [date, setDate] = useState('');
 
   useEffect(() => {
@@ -55,55 +55,55 @@ function RecentNotificationItem({ notification }: { notification: Notification }
 }
 
 
-export default function DashboardPage() {
-  const lowStockProducts = MOCK_PRODUCTS.filter(p => p.stock < p.minStock).length;
-  const unreadNotifications = MOCK_NOTIFICATIONS.filter(n => !n.read).length;
+export default function PaginaPanelControl() {
+  const productosBajoStock = MOCK_PRODUCTS.filter(p => p.stock < p.minStock).length;
+  const notificacionesNoLeidas = MOCK_NOTIFICATIONS.filter(n => !n.read).length;
 
   return (
-    <MainLayout>
+    <DisenoPrincipal>
       <div className="space-y-6">
-        <h1 className="text-3xl font-bold font-headline text-foreground">Dashboard</h1>
+        <h1 className="text-3xl font-bold font-headline text-foreground">Panel de Control</h1>
         
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <KpiCard
-            title="Total Products"
+          <TarjetaKpi
+            title="Productos Totales"
             value={MOCK_PRODUCTS.length}
             icon={<Package className="h-5 w-5" />}
-            description="Number of unique products in inventory"
-            link="/products"
-            linkLabel="View Products"
+            description="Número de productos únicos en inventario"
+            link="/productos"
+            linkLabel="Ver Productos"
           />
-          <KpiCard
-            title="Product Categories"
+          <TarjetaKpi
+            title="Categorías de Productos"
             value={MOCK_CATEGORIES.length}
             icon={<Tags className="h-5 w-5" />}
-            description="Number of defined product categories"
-            link="/categories"
-            linkLabel="Manage Categories"
+            description="Número de categorías de productos definidas"
+            link="/categorias"
+            linkLabel="Gestionar Categorías"
           />
-          <KpiCard
-            title="Low Stock Items"
-            value={lowStockProducts}
+          <TarjetaKpi
+            title="Artículos con Stock Bajo"
+            value={productosBajoStock}
             icon={<AlertTriangle className="h-5 w-5 text-destructive" />}
-            description="Products needing immediate attention"
-            link="/products?filter=lowstock"
-            linkLabel="View Low Stock"
+            description="Productos que necesitan atención inmediata"
+            link="/productos?filter=lowstock"
+            linkLabel="Ver Stock Bajo"
           />
-          <KpiCard
-            title="Unread Notifications"
-            value={unreadNotifications}
+          <TarjetaKpi
+            title="Notificaciones No Leídas"
+            value={notificacionesNoLeidas}
             icon={<Bell className="h-5 w-5" />}
-            description="Important system updates and alerts"
-            link="/notifications"
-            linkLabel="Check Notifications"
+            description="Actualizaciones y alertas importantes del sistema"
+            link="/notificaciones"
+            linkLabel="Ver Notificaciones"
           />
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
           <Card className="shadow-lg">
             <CardHeader>
-              <CardTitle className="font-headline">Recent Low Stock Products</CardTitle>
-              <CardDescription>Top 5 products currently below minimum stock levels.</CardDescription>
+              <CardTitle className="font-headline">Productos Recientes con Stock Bajo</CardTitle>
+              <CardDescription>Top 5 de productos por debajo del nivel mínimo de stock.</CardDescription>
             </CardHeader>
             <CardContent>
               {MOCK_PRODUCTS.filter(p => p.stock < p.minStock).slice(0,5).length > 0 ? (
@@ -116,30 +116,30 @@ export default function DashboardPage() {
                 ))}
               </ul>
               ) : (
-                <p className="text-muted-foreground">No products are currently critically low on stock.</p>
+                <p className="text-muted-foreground">Actualmente no hay productos con niveles críticos de stock.</p>
               )}
             </CardContent>
           </Card>
 
           <Card className="shadow-lg">
             <CardHeader>
-              <CardTitle className="font-headline">Recent Notifications</CardTitle>
-              <CardDescription>Latest system messages and alerts.</CardDescription>
+              <CardTitle className="font-headline">Notificaciones Recientes</CardTitle>
+              <CardDescription>Últimos mensajes y alertas del sistema.</CardDescription>
             </CardHeader>
             <CardContent>
                {MOCK_NOTIFICATIONS.slice(0,3).length > 0 ? (
                 <ul className="space-y-3">
                   {MOCK_NOTIFICATIONS.slice(0,3).map(notification => (
-                    <RecentNotificationItem key={notification.id} notification={notification} />
+                    <ItemNotificacionReciente key={notification.id} notification={notification} />
                   ))}
                 </ul>
               ) : (
-                <p className="text-muted-foreground">No recent notifications.</p>
+                <p className="text-muted-foreground">No hay notificaciones recientes.</p>
               )}
             </CardContent>
           </Card>
         </div>
       </div>
-    </MainLayout>
+    </DisenoPrincipal>
   );
 }

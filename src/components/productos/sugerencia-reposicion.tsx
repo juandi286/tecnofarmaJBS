@@ -8,11 +8,11 @@ import type { SugerirReposicionInput, SugerirReposicionOutput } from '@/ai/flows
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
-interface RestockSuggestionProps {
+interface SugerenciaReposicionProps {
   product: Product;
 }
 
-export function RestockSuggestion({ product }: RestockSuggestionProps) {
+export function SugerenciaReposicion({ product }: SugerenciaReposicionProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [suggestion, setSuggestion] = useState<SugerirReposicionOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
