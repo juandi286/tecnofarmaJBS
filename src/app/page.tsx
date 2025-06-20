@@ -1,3 +1,5 @@
+'use client';
+import { useState, useEffect } from 'react';
 import { MainLayout } from '@/components/layout/main-layout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { MOCK_PRODUCTS, MOCK_CATEGORIES, MOCK_NOTIFICATIONS } from '@/lib/constants';
@@ -5,6 +7,7 @@ import { Package, Tags, AlertTriangle, Bell } from 'lucide-react';
 import Link from 'next/link';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import type { Notification } from '@/lib/types';
 
 interface KpiCardProps {
   title: string;
@@ -34,6 +37,23 @@ function KpiCard({ title, value, icon, description, link, linkLabel }: KpiCardPr
     </Card>
   );
 }
+
+function RecentNotificationItem({ notification }: { notification: Notification }) {
+  const [date, setDate] = useState('');
+
+  useEffect(() => {
+    setDate(new Date(notification.date).toLocaleDateString());
+  }, [notification.date]);
+
+  return (
+    <li className="p-2 rounded-md hover:bg-muted/50 transition-colors border-l-4 border-primary">
+      <h4 className="font-semibold">{notification.title}</h4>
+      <p className="text-sm text-muted-foreground">{notification.description}</p>
+      {date && <p className="text-xs text-muted-foreground mt-1">{date}</p>}
+    </li>
+  );
+}
+
 
 export default function DashboardPage() {
   const lowStockProducts = MOCK_PRODUCTS.filter(p => p.stock < p.minStock).length;
@@ -110,11 +130,7 @@ export default function DashboardPage() {
                {MOCK_NOTIFICATIONS.slice(0,3).length > 0 ? (
                 <ul className="space-y-3">
                   {MOCK_NOTIFICATIONS.slice(0,3).map(notification => (
-                    <li key={notification.id} className="p-2 rounded-md hover:bg-muted/50 transition-colors border-l-4 border-primary">
-                      <h4 className="font-semibold">{notification.title}</h4>
-                      <p className="text-sm text-muted-foreground">{notification.description}</p>
-                      <p className="text-xs text-muted-foreground mt-1">{new Date(notification.date).toLocaleDateString()}</p>
-                    </li>
+                    <RecentNotificationItem key={notification.id} notification={notification} />
                   ))}
                 </ul>
               ) : (

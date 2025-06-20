@@ -1,3 +1,5 @@
+'use client';
+import { useState, useEffect } from 'react';
 import type { Notification } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { Bell, CheckCircle } from 'lucide-react';
@@ -10,6 +12,12 @@ interface NotificationItemProps {
 }
 
 export function NotificationItem({ notification, onMarkAsRead }: NotificationItemProps) {
+  const [date, setDate] = useState('');
+
+  useEffect(() => {
+    setDate(new Date(notification.date).toLocaleString());
+  }, [notification.date]);
+
   const Icon = notification.read ? CheckCircle : Bell;
   const cardBorderClass = notification.read ? 'border-muted' : 'border-primary';
 
@@ -22,7 +30,7 @@ export function NotificationItem({ notification, onMarkAsRead }: NotificationIte
         <div className="flex-1">
           <CardTitle className="text-base font-semibold font-headline">{notification.title}</CardTitle>
           <CardDescription className="text-xs text-muted-foreground">
-            {new Date(notification.date).toLocaleString()}
+            {date}
           </CardDescription>
         </div>
         {!notification.read && (
