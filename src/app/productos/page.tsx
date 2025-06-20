@@ -3,7 +3,7 @@ import { useState, useMemo } from 'react';
 import { DisenoPrincipal } from '@/components/layout/diseno-principal';
 import { BarraBusquedaProducto } from '@/components/productos/barra-busqueda-producto';
 import { TarjetaProducto } from '@/components/productos/tarjeta-producto';
-import { MOCK_PRODUCTS } from '@/lib/constants';
+import { MOCK_PRODUCTS, MOCK_CATEGORIES } from '@/lib/constants';
 import type { Product } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, ListFilter } from 'lucide-react';
@@ -15,11 +15,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
+import { FormularioAgregarProducto } from '@/components/productos/formulario-agregar-producto';
+import { useToast } from '@/hooks/use-toast';
 
 export default function PaginaProductos() {
   const [allProducts, setAllProducts] = useState<Product[]>(MOCK_PRODUCTS);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterLowStock, setFilterLowStock] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   const filteredProducts = useMemo(() => {
     return allProducts.filter(product => {
@@ -28,8 +34,30 @@ export default function PaginaProductos() {
                             product.lotNumber.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesLowStock = filterLowStock ? product.stock < product.minStock : true;
       return matchesSearch && matchesLowStock;
-    });
+    }).sort((a, b) => a.name.localeCompare(b.name));
   }, [allProducts, searchTerm, filterLowStock]);
+
+  const handleAddProduct = (values: any) => {
+    setIsLoading(true);
+    // Simular llamada a la API
+    setTimeout(() => {
+      const category = MOCK_CATEGORIES.find(cat => cat.id === values.categoryId);
+      const newProduct: Product = {
+        id: `prod${Date.now()}`,
+        imageUrl: 'https://placehold.co/300x200.png',
+        dataAiHint: 'medicina producto',
+        ...values,
+        categoryName: category?.name || 'Sin Categoría',
+      };
+      setAllProducts(prev => [newProduct, ...prev]);
+      setIsLoading(false);
+      setIsDialogOpen(false);
+      toast({
+        title: "Producto Añadido",
+        description: `El producto "${values.name}" se ha añadido correctamente.`,
+      });
+    }, 1000);
+  };
 
   return (
     <DisenoPrincipal>
@@ -56,9 +84,28 @@ export default function PaginaProductos() {
                 </DropdownMenuCheckboxItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button disabled>
-              <PlusCircle className="mr-2 h-5 w-5" /> Añadir Producto
-            </Button>
+
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <PlusCircle className="mr-2 h-5 w-5" /> Añadir Producto
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-lg">
+                <DialogHeader>
+                  <DialogTitle className="font-headline">Añadir Nuevo Producto</DialogTitle>
+                  <DialogDescription>
+                    Rellena los detalles para añadir un nuevo producto al inventario.
+                  </DialogDescription>
+                </DialogHeader>
+                <FormularioAgregarProducto
+                  onSubmit={handleAddProduct}
+                  isLoading={isLoading}
+                  categories={MOCK_CATEGORIES}
+                />
+              </DialogContent>
+            </Dialog>
+
           </div>
         </div>
 
