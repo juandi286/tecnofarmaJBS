@@ -105,7 +105,7 @@ export function FormularioIngreso() {
       </CardContent>
       <CardFooter className="flex flex-col items-center space-y-2">
         <Button variant="link" asChild className="text-sm">
-            <Link href="#">¿Olvidaste tu contraseña?</Link>
+            <Link href="/auth/olvide-password">¿Olvidaste tu contraseña?</Link>
         </Button>
         <p className="text-sm text-muted-foreground">
           ¿No tienes una cuenta?{' '}
