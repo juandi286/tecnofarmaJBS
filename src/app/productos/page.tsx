@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { DisenoPrincipal } from '@/components/layout/diseno-principal';
 import { BarraBusquedaProducto } from '@/components/productos/barra-busqueda-producto';
 import { TarjetaProducto } from '@/components/productos/tarjeta-producto';
@@ -17,17 +17,9 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 export default function PaginaProductos() {
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [allProducts, setAllProducts] = useState<Product[]>(MOCK_PRODUCTS);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterLowStock, setFilterLowStock] = useState(false);
-
-  useEffect(() => {
-    const productsWithCategoryNames = MOCK_PRODUCTS.map(p => ({
-      ...p,
-      categoryName: MOCK_PRODUCTS.find(mockP => mockP.id === p.id)?.categoryName || "Categoría Desconocida"
-    }));
-    setAllProducts(productsWithCategoryNames);
-  }, []);
 
   const filteredProducts = useMemo(() => {
     return allProducts.filter(product => {

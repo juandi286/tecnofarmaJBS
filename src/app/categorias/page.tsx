@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { DisenoPrincipal } from '@/components/layout/diseno-principal';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
@@ -11,15 +11,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { useToast } from '@/hooks/use-toast';
 
 export default function PaginaCategorias() {
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<Category[]>(MOCK_CATEGORIES);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-
-  useEffect(() => {
-    setCategories(MOCK_CATEGORIES);
-  }, []);
 
   const handleAddCategory = (values: { name: string, description?: string }, existingCategory?: Category) => {
     setIsLoading(true);
