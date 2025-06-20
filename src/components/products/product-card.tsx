@@ -4,7 +4,7 @@ import type { Product } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { AlertTriangle, Tag, Package, Hash } from 'lucide-react';
-import { RestockSuggestion } from './restock-suggestion';
+import { SugerenciaReposicion } from '../productos/sugerencia-reposicion';
 
 interface ProductCardProps {
   product: Product;
@@ -50,7 +50,7 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
       </CardContent>
       <CardFooter className="p-4 border-t">
-        <RestockSuggestion product={product} />
+        <SugerenciaReposicion product={product} />
       </CardFooter>
     </Card>
   );

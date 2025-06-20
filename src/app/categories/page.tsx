@@ -1,12 +1,12 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { MainLayout } from '@/components/layout/main-layout';
+import { DisenoPrincipal } from '@/components/layout/diseno-principal';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import { MOCK_CATEGORIES } from '@/lib/constants';
 import type { Category } from '@/lib/types';
-import { CategoryListItem } from '@/components/categories/category-list-item';
-import { AddCategoryForm } from '@/components/categories/add-category-form';
+import { ItemListaCategoria } from '@/components/categorias/item-lista-categoria';
+import { FormularioAgregarCategoria } from '@/components/categorias/formulario-agregar-categoria';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 
@@ -64,7 +64,7 @@ export default function CategoriesPage() {
 
 
   return (
-    <MainLayout>
+    <DisenoPrincipal>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold font-headline">Product Categories</h1>
@@ -81,7 +81,7 @@ export default function CategoriesPage() {
                   {editingCategory ? 'Update the details for this category.' : 'Fill in the details for the new product category.'}
                 </DialogDescription>
               </DialogHeader>
-              <AddCategoryForm 
+              <FormularioAgregarCategoria 
                 onSubmit={handleAddCategory} 
                 existingCategory={editingCategory} 
                 isLoading={isLoading}
@@ -93,7 +93,7 @@ export default function CategoriesPage() {
         {categories.length > 0 ? (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {categories.map(category => (
-              <CategoryListItem
+              <ItemListaCategoria
                 key={category.id}
                 category={category}
                 onEdit={handleEdit}
@@ -105,6 +105,6 @@ export default function CategoriesPage() {
           <p className="text-muted-foreground">No categories found. Add a new category to get started.</p>
         )}
       </div>
-    </MainLayout>
+    </DisenoPrincipal>
   );
 }

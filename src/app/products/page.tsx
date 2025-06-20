@@ -1,8 +1,8 @@
 'use client';
 import { useState, useEffect, useMemo } from 'react';
-import { MainLayout } from '@/components/layout/main-layout';
-import { ProductSearchBar } from '@/components/products/product-search-bar';
-import { ProductCard } from '@/components/products/product-card';
+import { DisenoPrincipal } from '@/components/layout/diseno-principal';
+import { BarraBusquedaProducto } from '@/components/productos/barra-busqueda-producto';
+import { TarjetaProducto } from '@/components/productos/tarjeta-producto';
 import { MOCK_PRODUCTS } from '@/lib/constants';
 import type { Product } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -42,12 +42,12 @@ export default function ProductsPage() {
   }, [allProducts, searchTerm, filterLowStock]);
 
   return (
-    <MainLayout>
+    <DisenoPrincipal>
       <div className="space-y-6">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <h1 className="text-3xl font-bold font-headline">Products</h1>
           <div className="flex items-center gap-2 w-full md:w-auto">
-            <ProductSearchBar onSearchChange={setSearchTerm} />
+            <BarraBusquedaProducto onSearchChange={setSearchTerm} />
              <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="icon">
@@ -75,7 +75,7 @@ export default function ProductsPage() {
         {filteredProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredProducts.map(product => (
-              <ProductCard key={product.id} product={product} />
+              <TarjetaProducto key={product.id} product={product} />
             ))}
           </div>
         ) : (
@@ -85,6 +85,6 @@ export default function ProductsPage() {
           </div>
         )}
       </div>
-    </MainLayout>
+    </DisenoPrincipal>
   );
 }

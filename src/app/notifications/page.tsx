@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { MainLayout } from '@/components/layout/main-layout';
-import { NotificationItem } from '@/components/notifications/notification-item';
+import { DisenoPrincipal } from '@/components/layout/diseno-principal';
+import { ItemNotificacion } from '@/components/notificaciones/item-notificacion';
 import { MOCK_NOTIFICATIONS } from '@/lib/constants';
 import type { Notification } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -28,7 +28,7 @@ export default function NotificationsPage() {
   const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
-    <MainLayout>
+    <DisenoPrincipal>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold font-headline">Notifications</h1>
@@ -42,7 +42,7 @@ export default function NotificationsPage() {
         {notifications.length > 0 ? (
           <div className="space-y-4">
             {notifications.map(notification => (
-              <NotificationItem
+              <ItemNotificacion
                 key={notification.id}
                 notification={notification}
                 onMarkAsRead={handleMarkAsRead}
@@ -56,6 +56,6 @@ export default function NotificationsPage() {
           </div>
         )}
       </div>
-    </MainLayout>
+    </DisenoPrincipal>
   );
 }
