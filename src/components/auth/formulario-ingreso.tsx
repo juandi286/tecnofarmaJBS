@@ -28,6 +28,10 @@ const esquemaIngreso = z.object({
 
 type ValoresFormularioIngreso = z.infer<typeof esquemaIngreso>;
 
+// Credenciales de demostración para el prototipo de frontend
+const VALID_EMAIL = 'admin@example.com';
+const VALID_PASSWORD = 'password';
+
 export function FormularioIngreso() {
   const router = useRouter();
   const { toast } = useToast();
@@ -41,9 +45,9 @@ export function FormularioIngreso() {
 
   async function onSubmit(values: ValoresFormularioIngreso) {
     await new Promise(resolve => setTimeout(resolve, 1000));
-    console.log('Intento de ingreso con:', values);
-
-    if (values.email === 'admin@example.com' && values.password === 'password') {
+    
+    // Simulación de autenticación
+    if (values.email === VALID_EMAIL && values.password === VALID_PASSWORD) {
       toast({
         title: "Ingreso Exitoso",
         description: "¡Bienvenido de nuevo!",
