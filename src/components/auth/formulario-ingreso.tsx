@@ -21,16 +21,13 @@ import { useToast } from '@/hooks/use-toast';
 import { Activity } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+// El esquema se simplifica para no requerir validación estricta, facilitando el acceso.
 const esquemaIngreso = z.object({
-  email: z.string().email({ message: 'Dirección de correo electrónico inválida.' }),
-  password: z.string().min(6, { message: 'La contraseña debe tener al menos 6 caracteres.' }),
+  email: z.string(),
+  password: z.string(),
 });
 
 type ValoresFormularioIngreso = z.infer<typeof esquemaIngreso>;
-
-// Credenciales de demostración para el prototipo de frontend
-const VALID_EMAIL = 'admin@example.com';
-const VALID_PASSWORD = 'password';
 
 export function FormularioIngreso() {
   const router = useRouter();
@@ -44,24 +41,14 @@ export function FormularioIngreso() {
   });
 
   async function onSubmit(values: ValoresFormularioIngreso) {
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Simulación de ingreso directo para el prototipo de frontend.
+    await new Promise(resolve => setTimeout(resolve, 500));
     
-    // Simulación de autenticación
-    if (values.email === VALID_EMAIL && values.password === VALID_PASSWORD) {
-      toast({
-        title: "Ingreso Exitoso",
-        description: "¡Bienvenido de nuevo!",
-      });
-      router.push('/');
-    } else {
-      toast({
-        variant: "destructive",
-        title: "Ingreso Fallido",
-        description: "Correo electrónico o contraseña inválidos.",
-      });
-      form.setError("email", { type: "manual", message: " " });
-      form.setError("password", { type: "manual", message: "Correo electrónico o contraseña inválidos." });
-    }
+    toast({
+      title: "Ingreso Exitoso",
+      description: "Accediendo al panel...",
+    });
+    router.push('/');
   }
 
   return (
@@ -70,8 +57,8 @@ export function FormularioIngreso() {
         <div className="mx-auto mb-4">
             <Activity className="h-12 w-12 text-primary" />
         </div>
-        <CardTitle className="text-3xl font-bold font-headline">¡Bienvenido de Nuevo!</CardTitle>
-        <CardDescription>Ingresa tus credenciales para acceder a TecnoFarma.</CardDescription>
+        <CardTitle className="text-3xl font-bold font-headline">¡Bienvenido a TecnoFarma!</CardTitle>
+        <CardDescription>Presiona "Ingresar" para acceder al prototipo. No se requiere autenticación.</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -83,7 +70,7 @@ export function FormularioIngreso() {
                 <FormItem>
                   <FormLabel>Correo Electrónico</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder="nombre@ejemplo.com" {...field} />
+                    <Input type="email" placeholder="Ingresa cualquier dato..." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -96,7 +83,7 @@ export function FormularioIngreso() {
                 <FormItem>
                   <FormLabel>Contraseña</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field} />
+                    <Input type="password" placeholder="Ingresa cualquier dato..." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
