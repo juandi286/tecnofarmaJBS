@@ -1,33 +1,19 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { DisenoPrincipal } from '@/components/layout/diseno-principal';
 import { ItemNotificacion } from '@/components/notificaciones/item-notificacion';
 import type { Notification } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { CheckCheck, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { MOCK_NOTIFICATIONS } from '@/lib/constants';
 
 export default function PaginaNotificaciones() {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [notifications, setNotifications] = useState<Notification[]>(
+    [...MOCK_NOTIFICATIONS].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  );
+  const [isLoading, setIsLoading] = useState(false); // Kept for consistency, but not used for fetching
   const { toast } = useToast();
-
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch('/api/notifications');
-        if (!response.ok) throw new Error('Failed to fetch');
-        const data = await response.json();
-        setNotifications(data.sort((a: Notification, b: Notification) => new Date(b.date).getTime() - new Date(a.date).getTime()));
-      } catch (error) {
-        toast({ variant: 'destructive', title: 'Error', description: 'No se pudieron cargar las notificaciones.' });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchNotifications();
-  }, [toast]);
 
   const handleMarkAsRead = (notificationId: string) => {
     // This action only affects local state. A real implementation would call an API.

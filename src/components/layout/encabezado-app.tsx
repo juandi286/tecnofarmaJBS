@@ -48,7 +48,7 @@ export function EncabezadoApp() {
             <DropdownMenuItem>Soporte</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link href="/auth/ingresar">Cerrar Sesión</Link>
+              <Link href="/">Cerrar Sesión</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

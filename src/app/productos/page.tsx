@@ -1,5 +1,5 @@
 'use client';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { DisenoPrincipal } from '@/components/layout/diseno-principal';
 import { BarraBusquedaProducto } from '@/components/productos/barra-busqueda-producto';
 import { TarjetaProducto } from '@/components/productos/tarjeta-producto';
@@ -17,40 +17,17 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { FormularioAgregarProducto } from '@/components/productos/formulario-agregar-producto';
 import { useToast } from '@/hooks/use-toast';
+import { MOCK_PRODUCTS, MOCK_CATEGORIES } from '@/lib/constants';
 
 export default function PaginaProductos() {
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [isDataLoading, setIsDataLoading] = useState(true);
+  const [allProducts, setAllProducts] = useState<Product[]>([...MOCK_PRODUCTS]);
+  const [categories] = useState<Category[]>([...MOCK_CATEGORIES]);
+  const [isDataLoading, setIsDataLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterLowStock, setFilterLowStock] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
-
-  const fetchProductsAndCategories = async () => {
-    setIsDataLoading(true);
-    try {
-      const [productsRes, categoriesRes] = await Promise.all([
-        fetch('/api/products'),
-        fetch('/api/categories')
-      ]);
-      if (!productsRes.ok || !categoriesRes.ok) throw new Error('Failed to fetch data');
-
-      const productsData = await productsRes.json();
-      const categoriesData = await categoriesRes.json();
-      setAllProducts(productsData);
-      setCategories(categoriesData);
-    } catch (error) {
-      toast({ variant: "destructive", title: "Error", description: "No se pudieron cargar los datos." });
-    } finally {
-      setIsDataLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchProductsAndCategories();
-  }, []);
 
   const filteredProducts = useMemo(() => {
     return allProducts.filter(product => {
@@ -64,16 +41,18 @@ export default function PaginaProductos() {
 
   const handleAddProduct = async (values: any) => {
     setIsSubmitting(true);
+    await new Promise(resolve => setTimeout(resolve, 500)); // Simulate delay
     try {
-      const response = await fetch('/api/products', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(values),
-      });
-
-      if (!response.ok) throw new Error(`Error: ${response.statusText}`);
+      const category = categories.find(cat => cat.id === values.categoryId);
+      const newProduct: Product = {
+        id: `prod${Date.now()}`,
+        imageUrl: 'https://placehold.co/300x200.png',
+        dataAiHint: 'medicina producto',
+        ...values,
+        categoryName: category?.name || 'Sin Categoría',
+      };
       
-      await fetchProductsAndCategories(); // Refetch all data
+      setAllProducts(prev => [newProduct, ...prev]);
 
       setIsDialogOpen(false);
       toast({

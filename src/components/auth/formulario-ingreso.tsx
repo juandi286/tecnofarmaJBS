@@ -48,7 +48,7 @@ export function FormularioIngreso() {
       title: "Ingreso Exitoso",
       description: "Accediendo al panel...",
     });
-    router.push('/');
+    router.push('/auth/ingresar'); // Redirige al dashboard que ahora está en esta ruta
   }
 
   return (

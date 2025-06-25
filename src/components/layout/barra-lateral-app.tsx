@@ -30,7 +30,7 @@ export function BarraLateralApp() {
   return (
     <Sidebar side="left" variant="sidebar" collapsible="icon">
       <SidebarHeader className="border-b">
-        <Link href="/" className="flex items-center gap-2 font-semibold font-headline text-lg group-data-[collapsible=icon]:justify-center">
+        <Link href="/auth/ingresar" className="flex items-center gap-2 font-semibold font-headline text-lg group-data-[collapsible=icon]:justify-center">
           <Activity className="h-7 w-7 text-primary group-data-[collapsible=icon]:h-6 group-data-[collapsible=icon]:w-6" />
           <span className="group-data-[collapsible=icon]:hidden">TecnoFarma</span>
         </Link>
@@ -42,7 +42,7 @@ export function BarraLateralApp() {
               <Link
                 href={item.href}
                 data-sidebar="menu-button"
-                data-active={pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))}
+                data-active={pathname === item.href || (item.href !== "/auth/ingresar" && pathname.startsWith(item.href))}
                 className={cn(
                   sidebarMenuButtonVariants({
                     variant: "default",

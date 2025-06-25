@@ -2,7 +2,7 @@ import type { NavItem, Category, Product, Notification } from './types';
 import { LayoutDashboard, Tags, PackageSearch, Bell, Settings } from 'lucide-react';
 
 export const NAV_ITEMS: NavItem[] = [
-  { title: 'Panel de Control', href: '/', icon: LayoutDashboard },
+  { title: 'Panel de Control', href: '/auth/ingresar', icon: LayoutDashboard },
   { title: 'Categorías', href: '/categorias', icon: Tags },
   { title: 'Productos', href: '/productos', icon: PackageSearch },
   { title: 'Notificaciones', href: '/notificaciones', icon: Bell },
