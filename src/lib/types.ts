@@ -33,3 +33,17 @@ export interface NavItem {
   icon: React.ElementType;
   disabled?: boolean;
 }
+
+// Tipos para la sugerencia de reposición que antes estaban en el flujo de IA
+export interface SugerirReposicionInput {
+  nombreProducto: string;
+  stockActual: number;
+  stockMinimo: number;
+  ventasDiariasPromedio: number;
+  cicloReposicionDias: number;
+}
+
+export interface SugerirReposicionOutput {
+  cantidadSugerida: number;
+  razonamiento: string;
+}

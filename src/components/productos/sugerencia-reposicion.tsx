@@ -3,8 +3,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Loader2, Lightbulb, AlertTriangle } from 'lucide-react';
 import { obtenerSugerenciaReposicion } from '@/lib/actions';
-import type { Product } from '@/lib/types';
-import type { SugerirReposicionInput, SugerirReposicionOutput } from '@/ai/flows/sugerir-reposicion';
+import type { Product, SugerirReposicionInput, SugerirReposicionOutput } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -55,7 +54,7 @@ export function SugerenciaReposicion({ product }: SugerenciaReposicionProps) {
         ) : (
           <Lightbulb className="mr-2 h-4 w-4" />
         )}
-        {isLoading ? 'Obteniendo Sugerencia...' : 'Sugerir Reposición'}
+        {isLoading ? 'Calculando...' : 'Sugerir Reposición'}
       </Button>
 
       {error && (
@@ -74,7 +73,7 @@ export function SugerenciaReposicion({ product }: SugerenciaReposicionProps) {
         <Card className="mt-4 border-primary bg-primary/10">
           <CardHeader className="p-3">
             <CardTitle className="text-base font-semibold text-primary-foreground font-headline">Sugerencia de Reposición</CardTitle>
-            <CardDescription className="text-primary-foreground/80">Cantidad recomendada por IA para {product.name}</CardDescription>
+            <CardDescription className="text-primary-foreground/80">Cálculo para {product.name}</CardDescription>
           </CardHeader>
           <CardContent className="p-3 pt-0 space-y-2">
             <p className="text-lg font-bold text-primary-foreground">
