@@ -1,12 +1,11 @@
 'use client';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { DisenoPrincipal } from '@/components/layout/diseno-principal';
 import { BarraBusquedaProducto } from '@/components/productos/barra-busqueda-producto';
 import { TarjetaProducto } from '@/components/productos/tarjeta-producto';
-import { MOCK_PRODUCTS, MOCK_CATEGORIES } from '@/lib/constants';
-import type { Product } from '@/lib/types';
+import type { Product, Category } from '@/lib/types';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, ListFilter } from 'lucide-react';
+import { PlusCircle, ListFilter, Loader2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,12 +19,38 @@ import { FormularioAgregarProducto } from '@/components/productos/formulario-agr
 import { useToast } from '@/hooks/use-toast';
 
 export default function PaginaProductos() {
-  const [allProducts, setAllProducts] = useState<Product[]>(MOCK_PRODUCTS);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isDataLoading, setIsDataLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterLowStock, setFilterLowStock] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+
+  const fetchProductsAndCategories = async () => {
+    setIsDataLoading(true);
+    try {
+      const [productsRes, categoriesRes] = await Promise.all([
+        fetch('/api/products'),
+        fetch('/api/categories')
+      ]);
+      if (!productsRes.ok || !categoriesRes.ok) throw new Error('Failed to fetch data');
+
+      const productsData = await productsRes.json();
+      const categoriesData = await categoriesRes.json();
+      setAllProducts(productsData);
+      setCategories(categoriesData);
+    } catch (error) {
+      toast({ variant: "destructive", title: "Error", description: "No se pudieron cargar los datos." });
+    } finally {
+      setIsDataLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProductsAndCategories();
+  }, []);
 
   const filteredProducts = useMemo(() => {
     return allProducts.filter(product => {
@@ -37,26 +62,29 @@ export default function PaginaProductos() {
     }).sort((a, b) => a.name.localeCompare(b.name));
   }, [allProducts, searchTerm, filterLowStock]);
 
-  const handleAddProduct = (values: any) => {
-    setIsLoading(true);
-    // Simular llamada a la API
-    setTimeout(() => {
-      const category = MOCK_CATEGORIES.find(cat => cat.id === values.categoryId);
-      const newProduct: Product = {
-        id: `prod${Date.now()}`,
-        imageUrl: 'https://placehold.co/300x200.png',
-        dataAiHint: 'medicina producto',
-        ...values,
-        categoryName: category?.name || 'Sin Categoría',
-      };
-      setAllProducts(prev => [newProduct, ...prev]);
-      setIsLoading(false);
+  const handleAddProduct = async (values: any) => {
+    setIsSubmitting(true);
+    try {
+      const response = await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) throw new Error(`Error: ${response.statusText}`);
+      
+      await fetchProductsAndCategories(); // Refetch all data
+
       setIsDialogOpen(false);
       toast({
         title: "Producto Añadido",
         description: `El producto "${values.name}" se ha añadido correctamente.`,
       });
-    }, 1000);
+    } catch (error) {
+      toast({ variant: "destructive", title: "Error", description: "No se pudo añadir el producto." });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -100,8 +128,8 @@ export default function PaginaProductos() {
                 </DialogHeader>
                 <FormularioAgregarProducto
                   onSubmit={handleAddProduct}
-                  isLoading={isLoading}
-                  categories={MOCK_CATEGORIES}
+                  isLoading={isSubmitting}
+                  categories={categories}
                 />
               </DialogContent>
             </Dialog>
@@ -109,7 +137,11 @@ export default function PaginaProductos() {
           </div>
         </div>
 
-        {filteredProducts.length > 0 ? (
+        {isDataLoading ? (
+           <div className="flex justify-center items-center py-10">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : filteredProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredProducts.map(product => (
               <TarjetaProducto key={product.id} product={product} />

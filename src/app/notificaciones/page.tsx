@@ -1,24 +1,43 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DisenoPrincipal } from '@/components/layout/diseno-principal';
 import { ItemNotificacion } from '@/components/notificaciones/item-notificacion';
-import { MOCK_NOTIFICATIONS } from '@/lib/constants';
 import type { Notification } from '@/lib/types';
 import { Button } from '@/components/ui/button';
-import { CheckCheck } from 'lucide-react';
+import { CheckCheck, Loader2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 export default function PaginaNotificaciones() {
-  const [notifications, setNotifications] = useState<Notification[]>(() =>
-    MOCK_NOTIFICATIONS.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-  );
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch('/api/notifications');
+        if (!response.ok) throw new Error('Failed to fetch');
+        const data = await response.json();
+        setNotifications(data.sort((a: Notification, b: Notification) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+      } catch (error) {
+        toast({ variant: 'destructive', title: 'Error', description: 'No se pudieron cargar las notificaciones.' });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchNotifications();
+  }, [toast]);
 
   const handleMarkAsRead = (notificationId: string) => {
+    // This action only affects local state. A real implementation would call an API.
     setNotifications(prev =>
       prev.map(n => (n.id === notificationId ? { ...n, read: true } : n))
     );
   };
 
   const handleMarkAllAsRead = () => {
+    // This action only affects local state. A real implementation would call an API.
     setNotifications(prev => prev.map(n => ({ ...n, read: true })));
   };
   
@@ -36,7 +55,11 @@ export default function PaginaNotificaciones() {
           )}
         </div>
 
-        {notifications.length > 0 ? (
+        {isLoading ? (
+          <div className="flex justify-center items-center py-10">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : notifications.length > 0 ? (
           <div className="space-y-4">
             {notifications.map(notification => (
               <ItemNotificacion

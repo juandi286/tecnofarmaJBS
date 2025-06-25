@@ -14,8 +14,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { useToast } from '@/hooks/use-toast';
-
 
 interface ItemListaCategoriaProps {
   category: Category;
@@ -24,14 +22,9 @@ interface ItemListaCategoriaProps {
 }
 
 export function ItemListaCategoria({ category, onEdit, onDelete }: ItemListaCategoriaProps) {
-  const { toast } = useToast();
 
-  const handleDelete = () => {
+  const handleDeleteConfirm = () => {
     onDelete(category.id);
-    toast({
-      title: "Categoría Eliminada",
-      description: `La categoría "${category.name}" ha sido eliminada.`,
-    });
   };
   
   return (
@@ -66,7 +59,7 @@ export function ItemListaCategoria({ category, onEdit, onDelete }: ItemListaCate
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancelar</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDelete}>Continuar</AlertDialogAction>
+              <AlertDialogAction onClick={handleDeleteConfirm}>Continuar</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
