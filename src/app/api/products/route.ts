@@ -1,37 +1,84 @@
 import { NextResponse } from 'next/server';
-import { MOCK_PRODUCTS, MOCK_CATEGORIES } from '@/lib/constants';
+import pool from '@/lib/db';
 import type { Product } from '@/lib/types';
-
-// NOTE: In a real app, this would be a database.
-// We are mutating the mock data array for simulation purposes.
-let products: Product[] = [...MOCK_PRODUCTS];
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const filter = searchParams.get('filter');
 
-  if (filter === 'lowstock') {
-    const lowStockProducts = products.filter(p => p.stock < p.minStock);
-    return NextResponse.json(lowStockProducts);
-  }
+  try {
+    const connection = await pool.getConnection();
+    let query = `
+      SELECT p.*, c.name as categoryName 
+      FROM products p 
+      LEFT JOIN categories c ON p.categoryId = c.id
+    `;
+    
+    if (filter === 'lowstock') {
+      query += ' WHERE p.stock < p.minStock';
+    }
+    query += ' ORDER BY p.name ASC';
 
-  return NextResponse.json(products);
+    const [rows]: any[] = await connection.query(query);
+    connection.release();
+
+    // Mapeamos para asegurar que los Ids son strings y los valores numéricos son números
+    const products: Product[] = rows.map((row: any) => ({
+      id: row.id.toString(),
+      name: row.name,
+      categoryId: row.categoryId.toString(),
+      categoryName: row.categoryName,
+      lotNumber: row.lotNumber,
+      stock: Number(row.stock),
+      minStock: Number(row.minStock),
+      imageUrl: row.imageUrl,
+      dataAiHint: row.dataAiHint,
+      averageDailySales: Number(row.averageDailySales),
+      reorderCycleDays: Number(row.reorderCycleDays),
+    }));
+
+    return NextResponse.json(products);
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ message: 'Error al obtener los productos' }, { status: 500 });
+  }
 }
 
 export async function POST(request: Request) {
-  const newProductData = await request.json();
-  
-  const category = MOCK_CATEGORIES.find(cat => cat.id === newProductData.categoryId);
-  
-  const newProduct: Product = {
-    id: `prod${Date.now()}`,
-    imageUrl: 'https://placehold.co/300x200.png',
-    dataAiHint: 'medicina producto',
-    ...newProductData,
-    categoryName: category?.name || 'Sin Categoría',
-  };
+  try {
+    const newProductData = await request.json();
+    const {
+      name,
+      categoryId,
+      lotNumber,
+      stock,
+      minStock,
+      averageDailySales,
+      reorderCycleDays
+    } = newProductData;
 
-  products.unshift(newProduct); // Add to the beginning of the array
+    // Validación simple
+    if (!name || !categoryId || !lotNumber) {
+        return NextResponse.json({ message: 'Faltan campos requeridos' }, { status: 400 });
+    }
 
-  return NextResponse.json(newProduct, { status: 201 });
+    const connection = await pool.getConnection();
+    const [result]: any = await connection.execute(
+      'INSERT INTO products (name, categoryId, lotNumber, stock, minStock, averageDailySales, reorderCycleDays, imageUrl, dataAiHint) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [name, categoryId, lotNumber, stock, minStock, averageDailySales, reorderCycleDays, 'https://placehold.co/300x200.png', 'medicina producto']
+    );
+    connection.release();
+
+    const newProduct = {
+        id: result.insertId.toString(),
+        imageUrl: 'https://placehold.co/300x200.png',
+        dataAiHint: 'medicina producto',
+        ...newProductData,
+    };
+
+    return NextResponse.json(newProduct, { status: 201 });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ message: 'Error al crear el producto' }, { status: 500 });
+  }
 }
