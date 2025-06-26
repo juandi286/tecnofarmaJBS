@@ -8,12 +8,16 @@ export interface Categoria {
 export interface Producto {
   id: string;
   nombre: string;
-  categoriaId: string;
+  descripcion?: string | null;
+  categoriaId?: string | null;
   nombreCategoria?: string;
+  proveedorId?: string | null;
   numeroLote: string;
   stock: number;
   stockMinimo: number;
-  urlImagen?: string;
+  precio?: number | null;
+  fechaVencimiento?: string | null; // Formato YYYY-MM-DD
+  urlImagen?: string | null;
   ventasDiariasPromedio: number;
   cicloReposicionDias: number;
 }
