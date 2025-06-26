@@ -1,21 +1,41 @@
-# Firebase Studio
+# TecnoFarma - Sistema de Gestión de Inventario de Farmacia
 
-This is a NextJS starter in Firebase Studio.
+Este es el frontend para TecnoFarma, un sistema de gestión de inventario para farmacias construido con Next.js y React.
 
-To get started, take a look at src/app/page.tsx.
+## Descripción del Proyecto
 
-## AI Features (Genkit with Google AI)
+TecnoFarma es una aplicación web diseñada para ayudar a las farmacias a gestionar su inventario de manera eficiente. Permite a los usuarios llevar un registro de productos, gestionar categorías, recibir notificaciones de stock bajo y mucho más.
 
-This application uses Genkit to integrate with Google AI for features like product restock suggestions. To enable these features, you'll need a Google AI API key.
+## Tecnologías Utilizadas
 
-1.  Obtain an API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
-2.  Create a file named `.env` in the root of your project (if it doesn't already exist).
-3.  Add your API key to the `.env` file like this:
+*   **Next.js:** Framework de React para construir aplicaciones web rápidas y escalables.
+*   **React:** Biblioteca para construir interfaces de usuario basadas en componentes.
+*   **TypeScript:** Superset de JavaScript que añade tipado estático para un código más robusto.
+*   **Tailwind CSS:** Framework de CSS para un estilizado rápido y moderno.
+*   **ShadCN/UI:** Colección de componentes de UI reutilizables y accesibles.
 
-    ```env
-    GOOGLE_API_KEY=YOUR_GOOGLE_API_KEY_HERE
+## Cómo Empezar
+
+Para ejecutar el proyecto en tu máquina local, sigue estos pasos:
+
+1.  **Clona el repositorio:**
+    ```bash
+    git clone <URL-del-repositorio>
     ```
 
-4.  **Important**: Ensure that `.env` is listed in your `.gitignore` file to prevent your API key from being committed to version control. If you don't have a `.gitignore` file, you should create one and add `.env` to it.
+2.  **Navega a la carpeta del proyecto:**
+    ```bash
+    cd <nombre-de-la-carpeta>
+    ```
 
-After adding the API key, restart your development server for the changes to take effect.
+3.  **Instala las dependencias:**
+    ```bash
+    npm install
+    ```
+
+4.  **Ejecuta el servidor de desarrollo:**
+    ```bash
+    npm run dev
+    ```
+
+Abre [http://localhost:9002](http://localhost:9002) en tu navegador para ver la aplicación en funcionamiento.
