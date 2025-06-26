@@ -1,4 +1,12 @@
+
 import mysql from 'mysql2/promise';
+
+// --- Línea de Depuración ---
+// Esta línea imprimirá el usuario de la base de datos en la terminal cuando el servidor inicie.
+// Si ves "DB_USER from env: undefined", significa que tu archivo .env.local no se está cargando.
+console.log('DB_USER from env:', process.env.DB_USER);
+// --- Fin de la Línea de Depuración ---
+
 
 // Configura el pool de conexiones.
 // Un pool es más eficiente que abrir y cerrar conexiones para cada consulta.
