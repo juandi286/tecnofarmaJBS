@@ -45,7 +45,7 @@ export function FormularioOlvidePassword() {
       title: "Solicitud Recibida",
       description: "Si una cuenta con ese correo electrónico existe, se ha enviado un enlace para restablecer la contraseña.",
     });
-    router.push('/auth/ingresar');
+    router.push('/');
   }
 
   return (
@@ -80,7 +80,7 @@ export function FormularioOlvidePassword() {
         </Form>
       </CardContent>
       <CardFooter className="flex justify-center">
-        <Link href="/auth/ingresar" className={cn(buttonVariants({ variant: "link" }), "text-sm")}>
+        <Link href="/" className={cn(buttonVariants({ variant: "link" }), "text-sm")}>
             Volver a iniciar sesión
         </Link>
       </CardFooter>
