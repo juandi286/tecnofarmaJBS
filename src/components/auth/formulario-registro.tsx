@@ -54,7 +54,7 @@ export function FormularioRegistro() {
         title: "Registro Exitoso",
         description: "Tu cuenta ha sido creada. Por favor, inicia sesión.",
     });
-    router.push('/auth/ingresar');
+    router.push('/');
   }
 
   return (
@@ -130,7 +130,7 @@ export function FormularioRegistro() {
       <CardFooter className="flex flex-col items-center">
         <p className="text-sm text-muted-foreground">
           ¿Ya tienes una cuenta?{' '}
-          <Link href="/auth/ingresar" className={cn(buttonVariants({ variant: "link" }), "p-0 h-auto font-semibold text-primary")}>
+          <Link href="/" className={cn(buttonVariants({ variant: "link" }), "p-0 h-auto font-semibold text-primary")}>
             Ingresar
           </Link>
         </p>
