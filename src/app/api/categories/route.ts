@@ -1,3 +1,4 @@
+
 import { NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import type { Category } from '@/lib/types';
@@ -5,21 +6,17 @@ import type { Category } from '@/lib/types';
 export async function GET() {
   try {
     const connection = await pool.getConnection();
-    // La consulta SQL para obtener todas las categorías y contar los productos en cada una.
     const [rows]: any[] = await connection.query(`
       SELECT 
         c.id, 
         c.name, 
         c.description, 
-        COUNT(p.id) AS productCount
+        (SELECT COUNT(*) FROM products p WHERE p.categoryId = c.id) AS productCount
       FROM categories c
-      LEFT JOIN products p ON c.id = p.categoryId
-      GROUP BY c.id, c.name, c.description
       ORDER BY c.name ASC
     `);
     connection.release();
 
-    // Mapeamos los resultados para asegurarnos que el id es un string
     const categories: Category[] = rows.map((row: any) => ({
       ...row,
       id: row.id.toString(),
@@ -36,7 +33,6 @@ export async function POST(request: Request) {
   try {
     const { name, description } = await request.json();
     
-    // Validación simple
     if (!name) {
       return NextResponse.json({ message: 'El nombre es requerido' }, { status: 400 });
     }
@@ -46,13 +42,15 @@ export async function POST(request: Request) {
       'INSERT INTO categories (name, description) VALUES (?, ?)',
       [name, description || '']
     );
+    
+    const newCategoryId = result.insertId;
+
+    const [newCategoryRows]: any = await connection.query('SELECT *, 0 AS productCount FROM categories WHERE id = ?', [newCategoryId]);
     connection.release();
 
     const newCategory: Category = {
-      id: result.insertId.toString(),
-      name,
-      description: description || '',
-      productCount: 0,
+      ...newCategoryRows[0],
+      id: newCategoryRows[0].id.toString(),
     };
 
     return NextResponse.json(newCategory, { status: 201 });

@@ -1,5 +1,6 @@
+
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DisenoPrincipal } from '@/components/layout/diseno-principal';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, Loader2 } from 'lucide-react';
@@ -8,46 +9,56 @@ import { ItemListaCategoria } from '@/components/categorias/item-lista-categoria
 import { FormularioAgregarCategoria } from '@/components/categorias/formulario-agregar-categoria';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { MOCK_CATEGORIES } from '@/lib/constants';
 
 export default function PaginaCategorias() {
-  // NOTE: State is now managed locally with mock data
-  const [categories, setCategories] = useState<Category[]>([...MOCK_CATEGORIES]);
-  const [isDataLoading, setIsDataLoading] = useState(false); // Kept for potential future use
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isDataLoading, setIsDataLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
+  const fetchCategories = async () => {
+    setIsDataLoading(true);
+    try {
+      const response = await fetch('/api/categories');
+      if (!response.ok) throw new Error('No se pudieron cargar las categorías.');
+      const data = await response.json();
+      setCategories(data);
+    } catch (error) {
+      toast({ variant: "destructive", title: "Error de Carga", description: error instanceof Error ? error.message : "Error desconocido." });
+    } finally {
+      setIsDataLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
   const handleFormSubmit = async (values: { name: string, description?: string }, existingCategory?: Category) => {
     setIsSubmitting(true);
-    
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 500));
+    const method = existingCategory ? 'PUT' : 'POST';
+    const url = existingCategory ? `/api/categories/${existingCategory.id}` : '/api/categories';
 
     try {
-      if (existingCategory) {
-        // Update existing category in local state
-        setCategories(prev => prev.map(c => 
-          c.id === existingCategory.id ? { ...c, ...values } : c
-        ));
-        toast({ title: "Categoría Actualizada", description: `La categoría "${values.name}" se guardó correctamente.` });
-      } else {
-        // Add new category to local state
-        const newCategory: Category = {
-          id: `cat${Date.now()}`,
-          name: values.name,
-          description: values.description || '',
-          productCount: 0,
-        };
-        setCategories(prev => [newCategory, ...prev]);
-        toast({ title: "Categoría Añadida", description: `La categoría "${values.name}" se guardó correctamente.` });
+      const response = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error al ${existingCategory ? 'actualizar' : 'crear'} la categoría.`);
       }
+
+      await fetchCategories(); // Recargar la lista de categorías
+      toast({ title: `Categoría ${existingCategory ? 'Actualizada' : 'Añadida'}`, description: `La categoría "${values.name}" se guardó correctamente.` });
       
       setIsDialogOpen(false);
       setEditingCategory(null);
     } catch (error) {
-      toast({ variant: "destructive", title: "Error", description: "No se pudo guardar la categoría." });
+      toast({ variant: "destructive", title: "Error", description: error instanceof Error ? error.message : "No se pudo guardar la categoría." });
     } finally {
       setIsSubmitting(false);
     }
@@ -56,15 +67,16 @@ export default function PaginaCategorias() {
   const handleDelete = async (categoryId: string) => {
     const categoryName = categories.find(c => c.id === categoryId)?.name || 'la categoría';
     
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-
     try {
-      // Delete from local state
-      setCategories(prev => prev.filter(c => c.id !== categoryId));
+      const response = await fetch(`/api/categories/${categoryId}`, { method: 'DELETE' });
+      if (!response.ok) {
+        throw new Error(`No se pudo eliminar ${categoryName}.`);
+      }
+      
+      await fetchCategories(); // Recargar la lista
       toast({ title: "Categoría Eliminada", description: `Se ha eliminado ${categoryName}.` });
     } catch (error) {
-      toast({ variant: "destructive", title: "Error", description: `No se pudo eliminar ${categoryName}.` });
+      toast({ variant: "destructive", title: "Error", description: error instanceof Error ? error.message : `No se pudo eliminar ${categoryName}.` });
     }
   };
 
