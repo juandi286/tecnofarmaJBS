@@ -1,22 +1,21 @@
-export interface Category {
+export interface Categoria {
   id: string;
-  name: string;
-  description: string;
-  productCount: number;
+  nombre: string;
+  descripcion: string;
+  cantidadProductos: number;
 }
 
-export interface Product {
+export interface Producto {
   id: string;
-  name: string;
-  categoryId: string;
-  categoryName?: string; // Optional, can be joined
-  lotNumber: string;
+  nombre: string;
+  categoriaId: string;
+  nombreCategoria?: string;
+  numeroLote: string;
   stock: number;
-  minStock: number;
-  imageUrl?: string;
-  dataAiHint?: string;
-  averageDailySales: number;
-  reorderCycleDays: number;
+  stockMinimo: number;
+  urlImagen?: string;
+  ventasDiariasPromedio: number;
+  cicloReposicionDias: number;
 }
 
 export interface Notification {
@@ -34,7 +33,6 @@ export interface NavItem {
   disabled?: boolean;
 }
 
-// Tipos para la sugerencia de reposición que antes estaban en el flujo de IA
 export interface SugerirReposicionInput {
   nombreProducto: string;
   stockActual: number;

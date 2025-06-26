@@ -14,16 +14,16 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import type { Category } from '@/lib/types';
+import type { Categoria } from '@/lib/types';
 
 const esquemaProducto = z.object({
-  name: z.string().min(3, { message: 'El nombre debe tener al menos 3 caracteres.' }),
-  categoryId: z.string({ required_error: 'Por favor selecciona una categoría.' }),
-  lotNumber: z.string().min(1, { message: 'El número de lote es requerido.' }),
+  nombre: z.string().min(3, { message: 'El nombre debe tener al menos 3 caracteres.' }),
+  categoriaId: z.string({ required_error: 'Por favor selecciona una categoría.' }),
+  numeroLote: z.string().min(1, { message: 'El número de lote es requerido.' }),
   stock: z.coerce.number().min(0, { message: 'El stock no puede ser negativo.' }),
-  minStock: z.coerce.number().min(0, { message: 'El stock mínimo no puede ser negativo.' }),
-  averageDailySales: z.coerce.number().min(0, { message: 'Las ventas promedio no pueden ser negativas.' }),
-  reorderCycleDays: z.coerce.number().min(1, { message: 'El ciclo debe ser de al menos 1 día.' }),
+  stockMinimo: z.coerce.number().min(0, { message: 'El stock mínimo no puede ser negativo.' }),
+  ventasDiariasPromedio: z.coerce.number().min(0, { message: 'Las ventas promedio no pueden ser negativas.' }),
+  cicloReposicionDias: z.coerce.number().min(1, { message: 'El ciclo debe ser de al menos 1 día.' }),
 });
 
 type ValoresFormularioProducto = z.infer<typeof esquemaProducto>;
@@ -31,19 +31,19 @@ type ValoresFormularioProducto = z.infer<typeof esquemaProducto>;
 interface FormularioAgregarProductoProps {
   onSubmit: (values: ValoresFormularioProducto) => void;
   isLoading?: boolean;
-  categories: Category[];
+  categories: Categoria[];
 }
 
 export function FormularioAgregarProducto({ onSubmit, isLoading, categories }: FormularioAgregarProductoProps) {
   const form = useForm<ValoresFormularioProducto>({
     resolver: zodResolver(esquemaProducto),
     defaultValues: {
-      name: '',
-      lotNumber: '',
+      nombre: '',
+      numeroLote: '',
       stock: 0,
-      minStock: 10,
-      averageDailySales: 1,
-      reorderCycleDays: 7,
+      stockMinimo: 10,
+      ventasDiariasPromedio: 1,
+      cicloReposicionDias: 7,
     },
   });
 
@@ -52,7 +52,7 @@ export function FormularioAgregarProducto({ onSubmit, isLoading, categories }: F
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
-          name="name"
+          name="nombre"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Nombre del Producto</FormLabel>
@@ -65,7 +65,7 @@ export function FormularioAgregarProducto({ onSubmit, isLoading, categories }: F
         />
         <FormField
           control={form.control}
-          name="categoryId"
+          name="categoriaId"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Categoría</FormLabel>
@@ -78,7 +78,7 @@ export function FormularioAgregarProducto({ onSubmit, isLoading, categories }: F
                 <SelectContent>
                   {categories.map(category => (
                     <SelectItem key={category.id} value={category.id}>
-                      {category.name}
+                      {category.nombre}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -90,7 +90,7 @@ export function FormularioAgregarProducto({ onSubmit, isLoading, categories }: F
         <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
-              name="lotNumber"
+              name="numeroLote"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Número de Lote</FormLabel>
@@ -118,7 +118,7 @@ export function FormularioAgregarProducto({ onSubmit, isLoading, categories }: F
         <div className="grid grid-cols-3 gap-4">
             <FormField
               control={form.control}
-              name="minStock"
+              name="stockMinimo"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Stock Mínimo</FormLabel>
@@ -131,7 +131,7 @@ export function FormularioAgregarProducto({ onSubmit, isLoading, categories }: F
             />
              <FormField
               control={form.control}
-              name="averageDailySales"
+              name="ventasDiariasPromedio"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Ventas Diarias</FormLabel>
@@ -144,7 +144,7 @@ export function FormularioAgregarProducto({ onSubmit, isLoading, categories }: F
             />
              <FormField
               control={form.control}
-              name="reorderCycleDays"
+              name="cicloReposicionDias"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Ciclo Repos.</FormLabel>

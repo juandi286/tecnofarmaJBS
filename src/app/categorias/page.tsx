@@ -4,17 +4,17 @@ import { useState, useEffect } from 'react';
 import { DisenoPrincipal } from '@/components/layout/diseno-principal';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, Loader2 } from 'lucide-react';
-import type { Category } from '@/lib/types';
+import type { Categoria } from '@/lib/types';
 import { ItemListaCategoria } from '@/components/categorias/item-lista-categoria';
 import { FormularioAgregarCategoria } from '@/components/categorias/formulario-agregar-categoria';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 
 export default function PaginaCategorias() {
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<Categoria[]>([]);
   const [isDataLoading, setIsDataLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [editingCategory, setEditingCategory] = useState<Categoria | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
@@ -36,7 +36,7 @@ export default function PaginaCategorias() {
     fetchCategories();
   }, []);
 
-  const handleFormSubmit = async (values: { name: string, description?: string }, existingCategory?: Category) => {
+  const handleFormSubmit = async (values: { nombre: string, descripcion?: string }, existingCategory?: Categoria) => {
     setIsSubmitting(true);
     const method = existingCategory ? 'PUT' : 'POST';
     const url = existingCategory ? `/api/categories/${existingCategory.id}` : '/api/categories';
@@ -52,8 +52,8 @@ export default function PaginaCategorias() {
         throw new Error(`Error al ${existingCategory ? 'actualizar' : 'crear'} la categoría.`);
       }
 
-      await fetchCategories(); // Recargar la lista de categorías
-      toast({ title: `Categoría ${existingCategory ? 'Actualizada' : 'Añadida'}`, description: `La categoría "${values.name}" se guardó correctamente.` });
+      await fetchCategories();
+      toast({ title: `Categoría ${existingCategory ? 'Actualizada' : 'Añadida'}`, description: `La categoría "${values.nombre}" se guardó correctamente.` });
       
       setIsDialogOpen(false);
       setEditingCategory(null);
@@ -65,7 +65,7 @@ export default function PaginaCategorias() {
   };
 
   const handleDelete = async (categoryId: string) => {
-    const categoryName = categories.find(c => c.id === categoryId)?.name || 'la categoría';
+    const categoryName = categories.find(c => c.id === categoryId)?.nombre || 'la categoría';
     
     try {
       const response = await fetch(`/api/categories/${categoryId}`, { method: 'DELETE' });
@@ -73,14 +73,14 @@ export default function PaginaCategorias() {
         throw new Error(`No se pudo eliminar ${categoryName}.`);
       }
       
-      await fetchCategories(); // Recargar la lista
+      await fetchCategories();
       toast({ title: "Categoría Eliminada", description: `Se ha eliminado ${categoryName}.` });
     } catch (error) {
       toast({ variant: "destructive", title: "Error", description: error instanceof Error ? error.message : `No se pudo eliminar ${categoryName}.` });
     }
   };
 
-  const handleEdit = (category: Category) => {
+  const handleEdit = (category: Categoria) => {
     setEditingCategory(category);
     setIsDialogOpen(true);
   };

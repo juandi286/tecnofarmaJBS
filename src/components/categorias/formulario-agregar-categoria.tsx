@@ -13,18 +13,18 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import type { Category } from '@/lib/types';
+import type { Categoria } from '@/lib/types';
 
 const esquemaCategoria = z.object({
-  name: z.string().min(2, { message: 'El nombre de la categoría debe tener al menos 2 caracteres.' }),
-  description: z.string().optional(),
+  nombre: z.string().min(2, { message: 'El nombre de la categoría debe tener al menos 2 caracteres.' }),
+  descripcion: z.string().optional(),
 });
 
 type ValoresFormularioCategoria = z.infer<typeof esquemaCategoria>;
 
 interface FormularioAgregarCategoriaProps {
-  onSubmit: (values: ValoresFormularioCategoria, existingCategory?: Category) => void;
-  existingCategory?: Category | null;
+  onSubmit: (values: ValoresFormularioCategoria, existingCategory?: Categoria) => void;
+  existingCategory?: Categoria | null;
   isLoading?: boolean;
 }
 
@@ -32,8 +32,8 @@ export function FormularioAgregarCategoria({ onSubmit, existingCategory, isLoadi
   const form = useForm<ValoresFormularioCategoria>({
     resolver: zodResolver(esquemaCategoria),
     defaultValues: {
-      name: existingCategory?.name || '',
-      description: existingCategory?.description || '',
+      nombre: existingCategory?.nombre || '',
+      descripcion: existingCategory?.descripcion || '',
     },
   });
 
@@ -46,7 +46,7 @@ export function FormularioAgregarCategoria({ onSubmit, existingCategory, isLoadi
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
         <FormField
           control={form.control}
-          name="name"
+          name="nombre"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Nombre de la Categoría</FormLabel>
@@ -59,7 +59,7 @@ export function FormularioAgregarCategoria({ onSubmit, existingCategory, isLoadi
         />
         <FormField
           control={form.control}
-          name="description"
+          name="descripcion"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Descripción (Opcional)</FormLabel>

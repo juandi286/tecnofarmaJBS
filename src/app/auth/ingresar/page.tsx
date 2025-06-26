@@ -2,25 +2,53 @@
 import { useState, useEffect } from 'react';
 import { DisenoPrincipal } from '@/components/layout/diseno-principal';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import type { Product, Category, Notification } from '@/lib/types';
-import { Package, Tags, AlertTriangle, Bell } from 'lucide-react';
+import type { Producto, Categoria, Notification } from '@/lib/types';
+import { Package, Tags, AlertTriangle, Bell, Loader2 } from 'lucide-react';
 import { ItemNotificacionReciente } from '@/components/dashboard/item-notificacion-reciente';
 import { TarjetaKpi } from '@/components/dashboard/tarjeta-kpi';
 import { Skeleton } from '@/components/ui/skeleton';
-import { MOCK_PRODUCTS, MOCK_CATEGORIES, MOCK_NOTIFICATIONS } from '@/lib/constants';
+import { MOCK_NOTIFICATIONS } from '@/lib/constants';
+import { useToast } from '@/hooks/use-toast';
+
 
 export default function PaginaPanelControl() {
-  // NOTE: Data is now loaded from mock constants, not an API.
-  const [products] = useState<Product[]>([...MOCK_PRODUCTS]);
-  const [categories] = useState<Category[]>([...MOCK_CATEGORIES]);
-  const [notifications] = useState<Notification[]>(
+  const [products, setProducts] = useState<Producto[]>([]);
+  const [categories, setCategories] = useState<Categoria[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>(
     [...MOCK_NOTIFICATIONS].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
   );
-  
-  // No loading state needed as data is available immediately
-  const isLoading = false;
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
 
-  const productosBajoStock = products.filter(p => p.stock < p.minStock);
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setIsLoading(true);
+        const [productsRes, categoriesRes] = await Promise.all([
+          fetch('/api/products'),
+          fetch('/api/categories'),
+        ]);
+
+        if (!productsRes.ok || !categoriesRes.ok) {
+          throw new Error('No se pudieron cargar los datos del panel de control.');
+        }
+
+        const productsData = await productsRes.json();
+        const categoriesData = await categoriesRes.json();
+
+        setProducts(productsData);
+        setCategories(categoriesData);
+
+      } catch (error) {
+         toast({ variant: "destructive", title: "Error de Carga", description: error instanceof Error ? error.message : "Error desconocido." });
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchData();
+  }, [toast]);
+
+  const productosBajoStock = products.filter(p => p.stock < p.stockMinimo);
   const notificacionesNoLeidas = notifications.filter(n => !n.read).length;
 
   return (
@@ -81,12 +109,14 @@ export default function PaginaPanelControl() {
               <CardDescription>Top 5 de productos por debajo del nivel mínimo de stock.</CardDescription>
             </CardHeader>
             <CardContent>
-              {productosBajoStock.slice(0, 5).length > 0 ? (
+              {isLoading ? (
+                <div className="flex justify-center items-center py-4"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
+              ) : productosBajoStock.slice(0, 5).length > 0 ? (
                 <ul className="space-y-2">
                   {productosBajoStock.slice(0, 5).map(product => (
                     <li key={product.id} className="flex justify-between items-center p-2 rounded-md hover:bg-muted/50 transition-colors">
-                      <span>{product.name}</span>
-                      <span className="text-sm text-destructive font-semibold">Stock: {product.stock} (Min: {product.minStock})</span>
+                      <span>{product.nombre}</span>
+                      <span className="text-sm text-destructive font-semibold">Stock: {product.stock} (Min: {product.stockMinimo})</span>
                     </li>
                   ))}
                 </ul>

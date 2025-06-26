@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import pool from '@/lib/db';
-import type { Product } from '@/lib/types';
+import type { Producto } from '@/lib/types';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -9,32 +9,30 @@ export async function GET(request: Request) {
   try {
     const connection = await pool.getConnection();
     let query = `
-      SELECT p.*, c.name as categoryName 
-      FROM products p 
-      LEFT JOIN categories c ON p.categoryId = c.id
+      SELECT p.*, c.nombre as nombreCategoria 
+      FROM productos p 
+      LEFT JOIN categorias c ON p.categoriaId = c.id
     `;
     
     if (filter === 'lowstock') {
-      query += ' WHERE p.stock < p.minStock';
+      query += ' WHERE p.stock < p.stockMinimo';
     }
-    query += ' ORDER BY p.name ASC';
+    query += ' ORDER BY p.nombre ASC';
 
     const [rows]: any[] = await connection.query(query);
     connection.release();
 
-    // Mapeamos para asegurar que los Ids son strings y los valores numéricos son números
-    const products: Product[] = rows.map((row: any) => ({
+    const products: Producto[] = rows.map((row: any) => ({
       id: row.id.toString(),
-      name: row.name,
-      categoryId: row.categoryId.toString(),
-      categoryName: row.categoryName,
-      lotNumber: row.lotNumber,
+      nombre: row.nombre,
+      categoriaId: row.categoriaId?.toString(),
+      nombreCategoria: row.nombreCategoria,
+      numeroLote: row.numeroLote,
       stock: Number(row.stock),
-      minStock: Number(row.minStock),
-      imageUrl: row.imageUrl,
-      dataAiHint: row.dataAiHint,
-      averageDailySales: Number(row.averageDailySales),
-      reorderCycleDays: Number(row.reorderCycleDays),
+      stockMinimo: Number(row.stockMinimo),
+      urlImagen: row.urlImagen,
+      ventasDiariasPromedio: Number(row.ventasDiariasPromedio),
+      cicloReposicionDias: Number(row.cicloReposicionDias),
     }));
 
     return NextResponse.json(products);
@@ -48,33 +46,41 @@ export async function POST(request: Request) {
   try {
     const newProductData = await request.json();
     const {
-      name,
-      categoryId,
-      lotNumber,
+      nombre,
+      categoriaId,
+      numeroLote,
       stock,
-      minStock,
-      averageDailySales,
-      reorderCycleDays
+      stockMinimo,
+      ventasDiariasPromedio,
+      cicloReposicionDias
     } = newProductData;
 
-    // Validación simple
-    if (!name || !categoryId || !lotNumber) {
+    if (!nombre || !categoriaId || !numeroLote) {
         return NextResponse.json({ message: 'Faltan campos requeridos' }, { status: 400 });
     }
 
     const connection = await pool.getConnection();
     const [result]: any = await connection.execute(
-      'INSERT INTO products (name, categoryId, lotNumber, stock, minStock, averageDailySales, reorderCycleDays, imageUrl, dataAiHint) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [name, categoryId, lotNumber, stock, minStock, averageDailySales, reorderCycleDays, 'https://placehold.co/300x200.png', 'medicina producto']
+      'INSERT INTO productos (nombre, categoriaId, numeroLote, stock, stockMinimo, ventasDiariasPromedio, cicloReposicionDias, urlImagen) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [nombre, categoriaId, numeroLote, stock, stockMinimo, ventasDiariasPromedio, cicloReposicionDias, 'https://placehold.co/300x200.png']
+    );
+    
+    const newProductId = result.insertId;
+    const [newProductRows]: any = await connection.query(`
+        SELECT p.*, c.nombre as nombreCategoria 
+        FROM productos p 
+        LEFT JOIN categorias c ON p.categoriaId = c.id 
+        WHERE p.id = ?`, 
+        [newProductId]
     );
     connection.release();
-
-    const newProduct = {
-        id: result.insertId.toString(),
-        imageUrl: 'https://placehold.co/300x200.png',
-        dataAiHint: 'medicina producto',
-        ...newProductData,
+    
+    const newProduct: Producto = {
+        ...newProductRows[0],
+        id: newProductRows[0].id.toString(),
+        categoriaId: newProductRows[0].categoriaId.toString(),
     };
+
 
     return NextResponse.json(newProduct, { status: 201 });
   } catch (error) {

@@ -1,9 +1,10 @@
 'use client';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { DisenoPrincipal } from '@/components/layout/diseno-principal';
 import { BarraBusquedaProducto } from '@/components/productos/barra-busqueda-producto';
 import { TarjetaProducto } from '@/components/productos/tarjeta-producto';
-import type { Product, Category } from '@/lib/types';
+import type { Producto, Categoria } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, ListFilter, Loader2 } from 'lucide-react';
 import {
@@ -17,50 +18,75 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { FormularioAgregarProducto } from '@/components/productos/formulario-agregar-producto';
 import { useToast } from '@/hooks/use-toast';
-import { MOCK_PRODUCTS, MOCK_CATEGORIES } from '@/lib/constants';
 
 export default function PaginaProductos() {
-  const [allProducts, setAllProducts] = useState<Product[]>([...MOCK_PRODUCTS]);
-  const [categories] = useState<Category[]>([...MOCK_CATEGORIES]);
-  const [isDataLoading, setIsDataLoading] = useState(false);
+  const searchParams = useSearchParams();
+  const [allProducts, setAllProducts] = useState<Producto[]>([]);
+  const [categories, setCategories] = useState<Categoria[]>([]);
+  const [isDataLoading, setIsDataLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterLowStock, setFilterLowStock] = useState(false);
+  const [filterLowStock, setFilterLowStock] = useState(searchParams.get('filter') === 'lowstock');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
+  const fetchProductsAndCategories = async () => {
+    setIsDataLoading(true);
+    try {
+      const [productsRes, categoriesRes] = await Promise.all([
+        fetch(`/api/products${filterLowStock ? '?filter=lowstock' : ''}`),
+        fetch('/api/categories'),
+      ]);
+
+      if (!productsRes.ok || !categoriesRes.ok) {
+        throw new Error('No se pudieron cargar los datos.');
+      }
+      const productsData = await productsRes.json();
+      const categoriesData = await categoriesRes.json();
+      setAllProducts(productsData);
+      setCategories(categoriesData);
+    } catch (error) {
+      toast({ variant: 'destructive', title: 'Error de Carga', description: error instanceof Error ? error.message : 'Error desconocido.' });
+    } finally {
+      setIsDataLoading(false);
+    }
+  };
+  
+  useEffect(() => {
+    fetchProductsAndCategories();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterLowStock]);
+
   const filteredProducts = useMemo(() => {
     return allProducts.filter(product => {
-      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            (product.categoryName && product.categoryName.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                            product.lotNumber.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesLowStock = filterLowStock ? product.stock < product.minStock : true;
-      return matchesSearch && matchesLowStock;
-    }).sort((a, b) => a.name.localeCompare(b.name));
-  }, [allProducts, searchTerm, filterLowStock]);
+      return product.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (product.nombreCategoria && product.nombreCategoria.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            product.numeroLote.toLowerCase().includes(searchTerm.toLowerCase());
+    }).sort((a, b) => a.nombre.localeCompare(b.nombre));
+  }, [allProducts, searchTerm]);
 
   const handleAddProduct = async (values: any) => {
     setIsSubmitting(true);
-    await new Promise(resolve => setTimeout(resolve, 500)); // Simulate delay
     try {
-      const category = categories.find(cat => cat.id === values.categoryId);
-      const newProduct: Product = {
-        id: `prod${Date.now()}`,
-        imageUrl: 'https://placehold.co/300x200.png',
-        dataAiHint: 'medicina producto',
-        ...values,
-        categoryName: category?.name || 'Sin Categoría',
-      };
-      
-      setAllProducts(prev => [newProduct, ...prev]);
+       const response = await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al añadir el producto.');
+      }
+
+      await fetchProductsAndCategories();
 
       setIsDialogOpen(false);
       toast({
         title: "Producto Añadido",
-        description: `El producto "${values.name}" se ha añadido correctamente.`,
+        description: `El producto "${values.nombre}" se ha añadido correctamente.`,
       });
     } catch (error) {
-      toast({ variant: "destructive", title: "Error", description: "No se pudo añadir el producto." });
+      toast({ variant: "destructive", title: "Error", description: error instanceof Error ? error.message : "No se pudo añadir el producto." });
     } finally {
       setIsSubmitting(false);
     }

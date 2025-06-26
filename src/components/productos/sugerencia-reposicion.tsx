@@ -3,12 +3,12 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Loader2, Lightbulb, AlertTriangle } from 'lucide-react';
 import { obtenerSugerenciaReposicion } from '@/lib/actions';
-import type { Product, SugerirReposicionInput, SugerirReposicionOutput } from '@/lib/types';
+import type { Producto, SugerirReposicionInput, SugerirReposicionOutput } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface SugerenciaReposicionProps {
-  product: Product;
+  product: Producto;
 }
 
 export function SugerenciaReposicion({ product }: SugerenciaReposicionProps) {
@@ -23,11 +23,11 @@ export function SugerenciaReposicion({ product }: SugerenciaReposicionProps) {
     setSuggestion(null);
 
     const input: SugerirReposicionInput = {
-      nombreProducto: product.name,
+      nombreProducto: product.nombre,
       stockActual: product.stock,
-      stockMinimo: product.minStock,
-      ventasDiariasPromedio: product.averageDailySales,
-      cicloReposicionDias: product.reorderCycleDays,
+      stockMinimo: product.stockMinimo,
+      ventasDiariasPromedio: product.ventasDiariasPromedio,
+      cicloReposicionDias: product.cicloReposicionDias,
     };
 
     try {
@@ -73,7 +73,7 @@ export function SugerenciaReposicion({ product }: SugerenciaReposicionProps) {
         <Card className="mt-4 border-primary bg-primary/10">
           <CardHeader className="p-3">
             <CardTitle className="text-base font-semibold text-primary-foreground font-headline">Sugerencia de Reposición</CardTitle>
-            <CardDescription className="text-primary-foreground/80">Cálculo para {product.name}</CardDescription>
+            <CardDescription className="text-primary-foreground/80">Cálculo para {product.nombre}</CardDescription>
           </CardHeader>
           <CardContent className="p-3 pt-0 space-y-2">
             <p className="text-lg font-bold text-primary-foreground">
