@@ -1,7 +1,3 @@
-import {genkit} from 'genkit';
-import {googleAI} from '@genkit-ai/googleai';
-
-export const ai = genkit({
-  plugins: [googleAI()],
-  model: 'googleai/gemini-2.0-flash',
-});
+// La configuración de Genkit se ha movido al backend.
+// Este archivo se mantiene por referencia. La inicialización
+// de Genkit debe ocurrir en el servidor de Express.

@@ -80,4 +80,42 @@ router.post('/', async (req, res, next) => {
   }
 });
 
+// SUGERIR REPOSICIÓN PARA UN PRODUCTO
+router.post('/sugerir-reposicion', (req, res, next) => {
+  try {
+    const { 
+      stockActual, 
+      stockMinimo, 
+      ventasDiariasPromedio, 
+      cicloReposicionDias 
+    } = req.body;
+
+    // Validar que los datos necesarios están presentes
+    if (stockActual === undefined || stockMinimo === undefined || ventasDiariasPromedio === undefined || cicloReposicionDias === undefined) {
+      return res.status(400).json({ message: 'Faltan datos para la sugerencia.' });
+    }
+
+    const stockDeSeguridad = ventasDiariasPromedio * cicloReposicionDias;
+    const stockObjetivo = stockMinimo + stockDeSeguridad;
+    let cantidadAPedir = stockObjetivo - stockActual;
+
+    if (cantidadAPedir < 0) {
+      cantidadAPedir = 0;
+    }
+    
+    const cantidadSugerida = Math.ceil(cantidadAPedir);
+
+    const razonamiento = `Se necesitan ${stockMinimo} unidades como mínimo y ${stockDeSeguridad} para cubrir ${cicloReposicionDias} días de venta. Total objetivo: ${stockObjetivo}. Con ${stockActual} unidades actuales, se sugiere pedir ${cantidadSugerida}.`;
+
+    res.json({
+      cantidadSugerida,
+      razonamiento,
+    });
+
+  } catch (error) {
+    next(error)
+  }
+});
+
+
 module.exports = router;

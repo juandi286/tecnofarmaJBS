@@ -37,14 +37,6 @@ export interface NavItem {
   disabled?: boolean;
 }
 
-export interface SugerirReposicionInput {
-  nombreProducto: string;
-  stockActual: number;
-  stockMinimo: number;
-  ventasDiariasPromedio: number;
-  cicloReposicionDias: number;
-}
-
 export interface SugerirReposicionOutput {
   cantidadSugerida: number;
   razonamiento: string;

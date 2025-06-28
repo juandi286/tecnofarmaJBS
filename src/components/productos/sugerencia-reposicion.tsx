@@ -2,8 +2,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Loader2, Lightbulb, AlertTriangle } from 'lucide-react';
-import { obtenerSugerenciaReposicion } from '@/lib/actions';
-import type { Producto, SugerirReposicionInput, SugerirReposicionOutput } from '@/lib/types';
+import type { Producto, SugerirReposicionOutput } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -22,7 +21,7 @@ export function SugerenciaReposicion({ product }: SugerenciaReposicionProps) {
     setError(null);
     setSuggestion(null);
 
-    const input: SugerirReposicionInput = {
+    const input = {
       nombreProducto: product.nombre,
       stockActual: product.stock,
       stockMinimo: product.stockMinimo,
@@ -31,7 +30,20 @@ export function SugerenciaReposicion({ product }: SugerenciaReposicionProps) {
     };
 
     try {
-      const result = await obtenerSugerenciaReposicion(input);
+      const response = await fetch('http://localhost:3001/api/productos/sugerir-reposicion', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(input),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'No se pudo obtener la sugerencia.');
+      }
+
+      const result = await response.json();
       setSuggestion(result);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Ocurrió un error desconocido.';
