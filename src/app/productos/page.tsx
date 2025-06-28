@@ -1,3 +1,4 @@
+
 'use client';
 import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -19,6 +20,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { FormularioAgregarProducto } from '@/components/productos/formulario-agregar-producto';
 import { useToast } from '@/hooks/use-toast';
 
+const API_URL = 'http://localhost:3001/api';
+
 export default function PaginaProductos() {
   const searchParams = useSearchParams();
   const [allProducts, setAllProducts] = useState<Producto[]>([]);
@@ -33,9 +36,11 @@ export default function PaginaProductos() {
   const fetchProductsAndCategories = async () => {
     setIsDataLoading(true);
     try {
+      const-
+      const productsUrl = `${API_URL}/productos${filterLowStock ? '?filter=lowstock' : ''}`;
       const [productsRes, categoriesRes] = await Promise.all([
-        fetch(`/api/products${filterLowStock ? '?filter=lowstock' : ''}`),
-        fetch('/api/categories'),
+        fetch(productsUrl),
+        fetch(`${API_URL}/categorias`),
       ]);
 
       if (!productsRes.ok || !categoriesRes.ok) {
@@ -46,7 +51,7 @@ export default function PaginaProductos() {
       setAllProducts(productsData);
       setCategories(categoriesData);
     } catch (error) {
-      toast({ variant: 'destructive', title: 'Error de Carga', description: error instanceof Error ? error.message : 'Error desconocido.' });
+      toast({ variant: 'destructive', title: 'Error de Carga', description: error instanceof Error ? error.message : 'Error desconocido. Asegúrate de que el servidor backend esté corriendo.' });
     } finally {
       setIsDataLoading(false);
     }
@@ -68,7 +73,7 @@ export default function PaginaProductos() {
   const handleAddProduct = async (values: any) => {
     setIsSubmitting(true);
     try {
-       const response = await fetch('/api/products', {
+       const response = await fetch(`${API_URL}/productos`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(values),

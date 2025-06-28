@@ -10,6 +10,8 @@ import { FormularioAgregarCategoria } from '@/components/categorias/formulario-a
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 
+const API_URL = 'http://localhost:3001/api';
+
 export default function PaginaCategorias() {
   const [categories, setCategories] = useState<Categoria[]>([]);
   const [isDataLoading, setIsDataLoading] = useState(true);
@@ -21,12 +23,12 @@ export default function PaginaCategorias() {
   const fetchCategories = async () => {
     setIsDataLoading(true);
     try {
-      const response = await fetch('/api/categories');
+      const response = await fetch(`${API_URL}/categorias`);
       if (!response.ok) throw new Error('No se pudieron cargar las categorías.');
       const data = await response.json();
       setCategories(data);
     } catch (error) {
-      toast({ variant: "destructive", title: "Error de Carga", description: error instanceof Error ? error.message : "Error desconocido." });
+      toast({ variant: "destructive", title: "Error de Carga", description: error instanceof Error ? error.message : "Error desconocido. Asegúrate de que el servidor backend esté corriendo." });
     } finally {
       setIsDataLoading(false);
     }
@@ -39,7 +41,7 @@ export default function PaginaCategorias() {
   const handleFormSubmit = async (values: { nombre: string, descripcion?: string }, existingCategory?: Categoria) => {
     setIsSubmitting(true);
     const method = existingCategory ? 'PUT' : 'POST';
-    const url = existingCategory ? `/api/categories/${existingCategory.id}` : '/api/categories';
+    const url = existingCategory ? `${API_URL}/categorias/${existingCategory.id}` : `${API_URL}/categorias`;
 
     try {
       const response = await fetch(url, {
@@ -68,7 +70,7 @@ export default function PaginaCategorias() {
     const categoryName = categories.find(c => c.id === categoryId)?.nombre || 'la categoría';
     
     try {
-      const response = await fetch(`/api/categories/${categoryId}`, { method: 'DELETE' });
+      const response = await fetch(`${API_URL}/categorias/${categoryId}`, { method: 'DELETE' });
       if (!response.ok) {
         throw new Error(`No se pudo eliminar ${categoryName}.`);
       }
