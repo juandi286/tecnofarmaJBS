@@ -1,4 +1,3 @@
-
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -10,7 +9,10 @@ const app = express();
 const port = process.env.PORT || 3001;
 
 // Middleware
-app.use(cors());
+// Se configura CORS para permitir peticiones solo desde el frontend
+app.use(cors({
+  origin: 'http://localhost:9002'
+}));
 app.use(express.json());
 
 // Rutas
